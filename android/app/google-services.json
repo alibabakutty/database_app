@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1031420983105",
+    "project_id": "trip-sheet-entry",
+    "storage_bucket": "trip-sheet-entry.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031420983105:android:0f69ad8c88ed748e0993c0",
+        "android_client_info": {
+          "package_name": "com.example.database_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBStAA0kz3xr3bqMTZV6HX-70zvdTkps-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
