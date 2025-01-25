@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
-class InputField extends StatelessWidget {
+class InputField extends StatefulWidget {
   final String label;
   final TextEditingController controller;
   final TextInputType keyboardType;
@@ -30,16 +31,57 @@ class InputField extends StatelessWidget {
   });
 
   @override
+  _InputFieldState createState() => _InputFieldState();
+}
+
+class _InputFieldState extends State<InputField> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isDateField && widget.controller.text.isEmpty) {
+      _setCurrentDate();
+    }
+  }
+
+  void _setCurrentDate() {
+    String formattedDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    widget.controller.text = formattedDate;
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime initialDate = DateTime.now();
+    if (widget.controller.text.isNotEmpty) {
+      try {
+        initialDate = DateFormat('dd-MM-yyyy').parse(widget.controller.text);
+      } catch (_) {}
+    }
+
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        widget.controller.text = DateFormat('dd-MM-yyyy').format(pickedDate);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          centerLabel ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment: widget.centerLabel
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
       children: [
-        if (label.isNotEmpty)
+        if (widget.label.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 4.0),
             child: Text(
-              label,
+              widget.label,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -47,11 +89,12 @@ class InputField extends StatelessWidget {
             ),
           ),
         TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-          readOnly: readOnly,
-          onChanged: onChanged,
+          controller: widget.controller,
+          keyboardType:
+              widget.isDateField ? TextInputType.none : widget.keyboardType,
+          inputFormatters: widget.inputFormatters,
+          readOnly: widget.isDateField || widget.readOnly,
+          onChanged: widget.onChanged,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             isDense: true, // Reduce height of the input field
@@ -61,7 +104,7 @@ class InputField extends StatelessWidget {
               horizontal: 8.0,
               vertical: 8.0, // Reduced vertical padding
             ),
-            prefixIcon: showRupeeSymbol
+            prefixIcon: widget.showRupeeSymbol
                 ? const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
@@ -73,15 +116,17 @@ class InputField extends StatelessWidget {
                     ),
                   )
                 : null,
-            prefixIconConstraints: showRupeeSymbol
+            prefixIconConstraints: widget.showRupeeSymbol
                 ? const BoxConstraints(minWidth: 0, minHeight: 0)
                 : null,
+            suffixIcon:
+                widget.isDateField ? const Icon(Icons.calendar_today) : null,
           ),
-          onTap: onTab,
+          onTap: widget.isDateField ? () => _selectDate(context) : widget.onTab,
           style: const TextStyle(fontSize: 14),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return '$label is required';
+              return '${widget.label} is required';
             }
             return null;
           },

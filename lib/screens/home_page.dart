@@ -7,15 +7,19 @@ import 'package:database_app/widgets/input_field.dart';
 import 'package:database_app/services/firebase_service.dart';
 import 'package:database_app/models/trip_sheet.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:database_app/authentication/auth.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomePage extends StatelessWidget {
+   HomePage({Key? key}) : super(key: key);
 
-  @override
-  _HomePageState createState() => _HomePageState();
-}
+  final User? user = Auth().currentUser;
 
-class _HomePageState extends State<HomePage> {
+  Future<void> _signOut(BuildContext context) async {
+    await Auth().signOut();
+    Navigator.of(context).pushReplacementNamed('/');
+  }
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController noController = TextEditingController();
   final TextEditingController jobNoController = TextEditingController();
@@ -530,6 +534,26 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.blue,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Text(
+                user?.email ?? 'User Email',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => _signOut(context),
+            tooltip: 'Sign Out',
+          ),
+        ],
       ),
       body: Container(
         color: const Color.fromARGB(255, 221, 235, 246),
@@ -623,6 +647,7 @@ class _HomePageState extends State<HomePage> {
                               label: '',
                               controller: dateController,
                               keyboardType: TextInputType.datetime,
+                              isDateField: true,
                               onTab: () async {
                                 FocusScope.of(context)
                                     .requestFocus(FocusNode());
@@ -767,7 +792,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -884,7 +910,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -902,7 +929,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -936,7 +964,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1011,7 +1040,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1102,7 +1132,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1177,7 +1208,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1266,7 +1298,9 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d*\.?\d{0,2}$'),
+                              ),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1341,7 +1375,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1430,7 +1465,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1505,7 +1541,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1594,7 +1631,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1669,7 +1707,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1758,7 +1797,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1833,7 +1873,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1924,7 +1965,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -1999,7 +2041,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -2088,7 +2131,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -2163,7 +2207,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -2252,7 +2297,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -2327,7 +2373,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -2416,7 +2463,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -2491,7 +2539,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -2580,7 +2629,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
@@ -2655,7 +2705,8 @@ class _HomePageState extends State<HomePage> {
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}$')),
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
