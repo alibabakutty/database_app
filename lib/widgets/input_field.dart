@@ -10,6 +10,9 @@ class InputField extends StatelessWidget {
   final bool centerLabel;
   final bool showRupeeSymbol;
   final bool readOnly;
+  final ValueChanged<String>? onChanged;
+  final bool formatToTwoDecimals;
+  final bool isDateField;
 
   const InputField({
     super.key,
@@ -21,6 +24,9 @@ class InputField extends StatelessWidget {
     this.centerLabel = false,
     this.showRupeeSymbol = false,
     this.readOnly = false,
+    this.onChanged,
+    this.formatToTwoDecimals = false,
+    this.isDateField = false,
   });
 
   @override
@@ -45,6 +51,7 @@ class InputField extends StatelessWidget {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           readOnly: readOnly,
+          onChanged: onChanged,
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
             isDense: true, // Reduce height of the input field

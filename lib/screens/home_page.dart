@@ -1,4 +1,5 @@
 // lib/screens/home_page.dart
+import 'package:database_app/utils/calculations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:database_app/widgets/header_section.dart';
@@ -7,9 +8,14 @@ import 'package:database_app/services/firebase_service.dart';
 import 'package:database_app/models/trip_sheet.dart';
 import 'package:intl/intl.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController noController = TextEditingController();
   final TextEditingController jobNoController = TextEditingController();
@@ -63,14 +69,17 @@ class HomePage extends StatelessWidget {
       TextEditingController();
   final TextEditingController approvedUnloadingChargesController =
       TextEditingController();
-  final actualOtherExpensesController = TextEditingController();
-  final approvedOtherExpensesController = TextEditingController();
-  final actualTotalController = TextEditingController();
-  final approvedTotalController = TextEditingController();
-  final actualBalanceController = TextEditingController();
-  final approvedBalanceController = TextEditingController();
-  final verifiedByController = TextEditingController();
-  final passedByController = TextEditingController();
+  final TextEditingController actualOtherExpensesController =
+      TextEditingController();
+  final TextEditingController approvedOtherExpensesController =
+      TextEditingController();
+  final TextEditingController actualTotalController = TextEditingController();
+  final TextEditingController approvedTotalController = TextEditingController();
+  final TextEditingController actualBalanceController = TextEditingController();
+  final TextEditingController approvedBalanceController =
+      TextEditingController();
+  final TextEditingController verifiedByController = TextEditingController();
+  final TextEditingController passedByController = TextEditingController();
 
   final FirebaseService _firebaseService = FirebaseService();
 
@@ -91,8 +100,13 @@ class HomePage extends StatelessWidget {
         }
 
         // Format liters to 3 decimal places
-        double liters = double.tryParse(litersController.text) ?? 0.0;
-        String formattedLiters = liters.toStringAsFixed(3);
+        double? parsedLiters = double.tryParse(litersController.text);
+        if (parsedLiters == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid Liters field!')),
+          );
+          return;
+        }
 
         // Safe parsing for 'Amount' field
         double? parsedAmount = double.tryParse(amountController.text);
@@ -406,7 +420,7 @@ class HomePage extends StatelessWidget {
           vehicleNo: vehicleNoController.text,
           fromLocation: fromLocationController.text,
           toLocation: toLocationController.text,
-          liters: double.parse(formattedLiters),
+          liters: parsedLiters,
           amount: parsedAmount,
           driverName: driverNameController.text,
           cleanerName: cleanerNameController.text,
@@ -736,8 +750,7 @@ class HomePage extends StatelessWidget {
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,3}'))
+                              FilteringTextInputFormatter.digitsOnly
                             ],
                             centerLabel: true,
                           ),
@@ -758,6 +771,7 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                           ),
                         ),
                       ),
@@ -926,6 +940,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -944,6 +1015,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -978,6 +1106,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -996,6 +1181,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1028,6 +1270,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1046,6 +1345,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1078,6 +1434,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1096,6 +1509,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1128,6 +1598,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1146,6 +1673,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1178,6 +1762,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1196,6 +1837,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1230,6 +1928,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1248,6 +2003,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1280,6 +2092,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1298,6 +2167,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1330,6 +2256,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1348,6 +2331,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1380,6 +2420,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1398,6 +2495,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1430,6 +2584,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1448,6 +2659,63 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            onChanged: (_) {
+                              calculateTotals(
+                                actualMtExpensesController:
+                                    actualMtExpensesController,
+                                approvedMtExpensesController:
+                                    approvedMtExpensesController,
+                                actualTollController: actualTollController,
+                                approvedTollController: approvedTollController,
+                                actualDriverChargesController:
+                                    actualDriverChargesController,
+                                approvedDriverChargesController:
+                                    approvedDriverChargesController,
+                                actualCleanerChargesController:
+                                    actualCleanerChargesController,
+                                approvedCleanerChargesController:
+                                    approvedCleanerChargesController,
+                                actualRtoPoliceController:
+                                    actualRtoPoliceController,
+                                approvedRtoPoliceController:
+                                    approvedRtoPoliceController,
+                                actualHarbourExpensesController:
+                                    actualHarbourExpensesController,
+                                approvedHarbourExpensesController:
+                                    approvedHarbourExpensesController,
+                                actualDriverExpensesController:
+                                    actualDriverExpensesController,
+                                approvedDriverExpensesController:
+                                    approvedDriverExpensesController,
+                                actualWeightChargesController:
+                                    actualWeightChargesController,
+                                approvedWeightChargesController:
+                                    approvedWeightChargesController,
+                                actualLoadingChargesController:
+                                    actualLoadingChargesController,
+                                approvedLoadingChargesController:
+                                    approvedLoadingChargesController,
+                                actualUnloadingChargesController:
+                                    actualUnloadingChargesController,
+                                approvedUnloadingChargesController:
+                                    approvedUnloadingChargesController,
+                                actualOtherExpensesController:
+                                    actualOtherExpensesController,
+                                approvedOtherExpensesController:
+                                    approvedOtherExpensesController,
+                                actualTotalController: actualTotalController,
+                                approvedTotalController:
+                                    approvedTotalController,
+                                actualAdvanceController:
+                                    actualAdvanceController,
+                                approvedAdvanceController:
+                                    approvedAdvanceController,
+                                actualBalanceController:
+                                    actualBalanceController,
+                                approvedBalanceController:
+                                    approvedBalanceController,
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1480,6 +2748,7 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            readOnly: true,
                           ),
                         ),
                       ),
@@ -1500,6 +2769,7 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            readOnly: true,
                           ),
                         ),
                       ),
@@ -1586,6 +2856,7 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            readOnly: true,
                           ),
                         ),
                       ),
@@ -1604,6 +2875,7 @@ class HomePage extends StatelessWidget {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            readOnly: true,
                           ),
                         ),
                       ),
