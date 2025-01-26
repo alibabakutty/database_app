@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class WidgetTree extends StatelessWidget {
-  const WidgetTree({Key? key}) : super(key: key);
+  const WidgetTree({super.key});
 
   @override
   Widget build(BuildContext context) {

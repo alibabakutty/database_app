@@ -1,17 +1,15 @@
-// lib/screens/home_page.dart
 import 'package:database_app/utils/calculations.dart';
+import 'package:database_app/utils/submit_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:database_app/widgets/header_section.dart';
 import 'package:database_app/widgets/input_field.dart';
-import 'package:database_app/services/firebase_service.dart';
-import 'package:database_app/models/trip_sheet.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:database_app/authentication/auth.dart';
 
 class HomePage extends StatelessWidget {
-   HomePage({Key? key}) : super(key: key);
+  HomePage({super.key});
 
   final User? user = Auth().currentUser;
 
@@ -85,448 +83,53 @@ class HomePage extends StatelessWidget {
   final TextEditingController verifiedByController = TextEditingController();
   final TextEditingController passedByController = TextEditingController();
 
-  final FirebaseService _firebaseService = FirebaseService();
-
-  void _handleSubmit(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
-      // Convert displayed date (dd-MM-yyyy) to backend format (yyyy-MM-dd)
-      try {
-        List<String> parts = dateController.text.split('-');
-        String formattedDate = '${parts[2]}-${parts[1]}-${parts[0]}';
-
-        // Safe parsing for 'No.' field
-        int? parsedNo = int.tryParse(noController.text);
-        if (parsedNo == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid No. field!')),
-          );
-          return;
-        }
-
-        // Format liters to 3 decimal places
-        double? parsedLiters = double.tryParse(litersController.text);
-        if (parsedLiters == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Liters field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'Amount' field
-        double? parsedAmount = double.tryParse(amountController.text);
-        if (parsedAmount == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Amount field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Advance' field
-        double? parsedActualAdvance =
-            double.tryParse(actualAdvanceController.text);
-        if (parsedActualAdvance == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Actual Advance field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Advance' field
-        double? parsedApprovedAdvance =
-            double.tryParse(approvedAdvanceController.text);
-        if (parsedApprovedAdvance == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Approved Advance field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual M.T.Expenses' field
-        double? parsedActualMtExpenses =
-            double.tryParse(actualMtExpensesController.text);
-        if (parsedActualMtExpenses == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Actual M.T.Expenses field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved M.T.Expenses' field
-        double? parsedApprovedMtExpenses =
-            double.tryParse(approvedMtExpensesController.text);
-        if (parsedApprovedMtExpenses == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Approved M.T.Expenses field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Toll' field
-        double? parsedActualToll = double.tryParse(actualTollController.text);
-        if (parsedActualToll == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Actual Toll field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Toll' field
-        double? parsedApprovedToll =
-            double.tryParse(approvedTollController.text);
-        if (parsedApprovedToll == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Approved Toll field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Driver Charges' field
-        double? parsedActualDriverCharges =
-            double.tryParse(actualDriverChargesController.text);
-        if (parsedActualDriverCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Actual Driver Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Driver Charges' field
-        double? parsedApprovedDriverCharges =
-            double.tryParse(approvedDriverChargesController.text);
-        if (parsedApprovedDriverCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Approved Driver Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Cleaner Charges' field
-        double? parsedActualCleanerCharges =
-            double.tryParse(actualCleanerChargesController.text);
-        if (parsedActualCleanerCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Actual Cleaner Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Cleaner Charges' field
-        double? parsedApprovedCleanerCharges =
-            double.tryParse(approvedCleanerChargesController.text);
-        if (parsedApprovedCleanerCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Approved Cleaner Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual R.T.O' field
-        double? parsedActualRto =
-            double.tryParse(actualRtoPoliceController.text);
-        if (parsedActualRto == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Actual R.T.O field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved R.T.O' field
-        double? parsedApprovedRto =
-            double.tryParse(approvedRtoPoliceController.text);
-        if (parsedApprovedRto == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Approved R.T.O field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Hrbour Expenses' field
-        double? parsedActualHarbour =
-            double.tryParse(actualHarbourExpensesController.text);
-        if (parsedActualHarbour == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Actual Harbour Expenses field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Harbour Expenses' field
-        double? parsedApprovedHarbour =
-            double.tryParse(approvedHarbourExpensesController.text);
-        if (parsedApprovedHarbour == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Approved Harbour Expenses field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Driver Expenses' field
-        double? parsedActualDriverExpenses =
-            double.tryParse(actualDriverExpensesController.text);
-        if (parsedActualDriverExpenses == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Actual Driver Expenses field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Driver Expenses' field
-        double? parsedApprovedDriverExpenses =
-            double.tryParse(approvedDriverExpensesController.text);
-        if (parsedApprovedDriverExpenses == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Approved Driver Expenses field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Weight Charges' field
-        double? parsedActualWeightCharges =
-            double.tryParse(actualWeightChargesController.text);
-        if (parsedActualWeightCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Actual Weight Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Weight Charges' field
-        double? parsedApprovedWeightCharges =
-            double.tryParse(approvedWeightChargesController.text);
-        if (parsedApprovedWeightCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Approved Weight Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Loading Charges' field
-        double? parsedActualLoadingCharges =
-            double.tryParse(actualLoadingChargesController.text);
-        if (parsedActualLoadingCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Actual Loading Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Loading Charges' field
-        double? parsedApprovedLoadingCharges =
-            double.tryParse(approvedLoadingChargesController.text);
-        if (parsedApprovedLoadingCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Approved Loading Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Unloading Charges' field
-        double? parsedActualUnloadingCharges =
-            double.tryParse(actualUnloadingChargesController.text);
-        if (parsedActualUnloadingCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Actual Unloading Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Unloading Charges' field
-        double? parsedApprovedUnloadingCharges =
-            double.tryParse(approvedUnloadingChargesController.text);
-        if (parsedApprovedUnloadingCharges == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Approved Unloading Charges field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Other Expenses' field
-        double? parsedActualOtherExpenses =
-            double.tryParse(actualOtherExpensesController.text);
-        if (parsedActualOtherExpenses == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Actual Other Expenses field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Other Expenses' field
-        double? parsedApprovedOtherExpenses =
-            double.tryParse(approvedOtherExpensesController.text);
-        if (parsedApprovedOtherExpenses == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Invalid Approved Other Expenses field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Total' field
-        double? parsedActualTotal = double.tryParse(actualTotalController.text);
-        if (parsedActualTotal == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Actual Total field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Total' field
-        double? parsedApprovedTotal =
-            double.tryParse(approvedTotalController.text);
-        if (parsedApprovedTotal == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Approved Total field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'actual Balance' field
-        double? parsedActualBalance =
-            double.tryParse(actualBalanceController.text);
-        if (parsedActualBalance == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Actual Balance field!')),
-          );
-          return;
-        }
-
-        // Safe parsing for 'approved Balance' field
-        double? parsedApprovedBalance =
-            double.tryParse(approvedBalanceController.text);
-        if (parsedApprovedBalance == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid Approved Balance field!')),
-          );
-          return;
-        }
-
-        TripSheet newTripSheet = TripSheet(
-          no: parsedNo,
-          jobNo: jobNoController.text,
-          date: DateTime.parse(formattedDate),
-          timestamp: DateTime.now(),
-          vehicleNo: vehicleNoController.text,
-          fromLocation: fromLocationController.text,
-          toLocation: toLocationController.text,
-          liters: parsedLiters,
-          amount: parsedAmount,
-          driverName: driverNameController.text,
-          cleanerName: cleanerNameController.text,
-          containerNo: containerNoController.text,
-          actualAdvance: parsedActualAdvance,
-          approvedAdvance: parsedApprovedAdvance,
-          actualMtExpenses: parsedActualMtExpenses,
-          approvedMtExpenses: parsedApprovedMtExpenses,
-          actualToll: parsedActualToll,
-          approvedToll: parsedApprovedToll,
-          actualDriverCharges: parsedActualDriverCharges,
-          approvedDriverCharges: parsedApprovedDriverCharges,
-          actualCleanerCharges: parsedActualCleanerCharges,
-          approvedCleanerCharges: parsedApprovedCleanerCharges,
-          actualRtoPolice: parsedActualRto,
-          approvedRtoPolice: parsedApprovedRto,
-          actualHarbourExpenses: parsedActualHarbour,
-          approvedHarbourExpenses: parsedApprovedHarbour,
-          actualDriverExpenses: parsedActualDriverExpenses,
-          approvedDriverExpenses: parsedApprovedDriverExpenses,
-          actualWeightCharges: parsedActualWeightCharges,
-          approvedWeightCharges: parsedApprovedWeightCharges,
-          actualLoadingCharges: parsedActualLoadingCharges,
-          approvedLoadingCharges: parsedApprovedLoadingCharges,
-          actualUnloadingCharges: parsedActualUnloadingCharges,
-          approvedUnloadingCharges: parsedApprovedUnloadingCharges,
-          actualOtherExpenses: parsedActualOtherExpenses,
-          approvedOtherExpenses: parsedApprovedOtherExpenses,
-          actualTotal: parsedActualTotal,
-          approvedTotal: parsedApprovedTotal,
-          actualBalance: parsedActualBalance,
-          approvedBalance: parsedApprovedBalance,
-          verifiedBy: verifiedByController.text,
-          passedBy: passedByController.text,
-        );
-
-        bool success = await _firebaseService.addTripSheet(newTripSheet);
-
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Form submitted successfully!')),
-          );
-          noController.clear();
-          jobNoController.clear();
-          dateController.clear();
-          vehicleNoController.clear();
-          fromLocationController.clear();
-          toLocationController.clear();
-          litersController.clear();
-          amountController.clear();
-          driverNameController.clear();
-          cleanerNameController.clear();
-          containerNoController.clear();
-          actualAdvanceController.clear();
-          approvedAdvanceController.clear();
-          actualMtExpensesController.clear();
-          approvedMtExpensesController.clear();
-          actualTollController.clear();
-          approvedTollController.clear();
-          actualDriverChargesController.clear();
-          approvedDriverChargesController.clear();
-          actualCleanerChargesController.clear();
-          approvedCleanerChargesController.clear();
-          actualRtoPoliceController.clear();
-          approvedRtoPoliceController.clear();
-          actualHarbourExpensesController.clear();
-          approvedHarbourExpensesController.clear();
-          actualDriverExpensesController.clear();
-          approvedDriverExpensesController.clear();
-          actualWeightChargesController.clear();
-          approvedWeightChargesController.clear();
-          actualLoadingChargesController.clear();
-          approvedLoadingChargesController.clear();
-          actualUnloadingChargesController.clear();
-          approvedUnloadingChargesController.clear();
-          actualOtherExpensesController.clear();
-          approvedOtherExpensesController.clear();
-          actualTotalController.clear();
-          approvedTotalController.clear();
-          actualBalanceController.clear();
-          approvedBalanceController.clear();
-          verifiedByController.clear();
-          passedByController.clear();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error submitting the form!')),
-          );
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid date format!')),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required fields!')),
-      );
-    }
-  }
+  final SubmitHandler submitHandler = SubmitHandler();
 
   @override
   Widget build(BuildContext context) {
+    final List<TextEditingController> controllers = [
+      noController,
+      jobNoController,
+      dateController,
+      vehicleNoController,
+      fromLocationController,
+      toLocationController,
+      litersController,
+      amountController,
+      driverNameController,
+      cleanerNameController,
+      containerNoController,
+      actualAdvanceController,
+      approvedAdvanceController,
+      actualMtExpensesController,
+      approvedMtExpensesController,
+      actualTollController,
+      approvedTollController,
+      actualDriverChargesController,
+      approvedDriverChargesController,
+      actualCleanerChargesController,
+      approvedCleanerChargesController,
+      actualRtoPoliceController,
+      approvedRtoPoliceController,
+      actualHarbourExpensesController,
+      approvedHarbourExpensesController,
+      actualDriverExpensesController,
+      approvedDriverExpensesController,
+      actualWeightChargesController,
+      approvedWeightChargesController,
+      actualLoadingChargesController,
+      approvedLoadingChargesController,
+      actualUnloadingChargesController,
+      approvedUnloadingChargesController,
+      actualOtherExpensesController,
+      approvedOtherExpensesController,
+      actualTotalController,
+      approvedTotalController,
+      actualBalanceController,
+      approvedBalanceController,
+      verifiedByController,
+      passedByController,
+    ];
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -3019,7 +2622,10 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 20),
                   Center(
                     child: ElevatedButton(
-                      onPressed: () => _handleSubmit(context),
+                      onPressed: () {
+                        submitHandler.handleSubmit(
+                            context, _formKey, controllers);
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
                         padding: const EdgeInsets.symmetric(

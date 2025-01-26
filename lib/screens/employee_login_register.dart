@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:database_app/authentication/auth.dart';
 
 class EmployeeLoginRegister extends StatefulWidget {
-  const EmployeeLoginRegister({Key? key}) : super(key: key);
+  const EmployeeLoginRegister({super.key});
 
   @override
   State<EmployeeLoginRegister> createState() => _EmployeeLoginPageState();
