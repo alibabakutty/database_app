@@ -1,4 +1,3 @@
-// lib/main.dart
 import 'package:database_app/firebase_options.dart';
 import 'package:database_app/screens/employee_login_register.dart';
 import 'package:database_app/screens/employer_login_register.dart';

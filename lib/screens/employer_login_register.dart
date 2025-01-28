@@ -10,26 +10,43 @@ class EmployerLoginRegister extends StatefulWidget {
 }
 
 class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  String? errorMessage = '';
-  bool isLogin = true; // Toggle between login and register
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
+  String verificationId = '';
+  bool isOtpSent = false;
+  String? errorMessage;
 
-  Future<void> sigInInOrRegister() async {
+  Future<void> sentOtp() async {
+    await Auth().verifyPhoneNo(
+      phoneNumber: '+${_phoneController.text}', // add country code
+      onCodeSent: (String vId, int? resentToken) {
+        setState(() {
+          verificationId = vId;
+          isOtpSent = true;
+        });
+      },
+      onVerificationCompleted: (PhoneAuthCredential credential) async {
+        await Auth().siginInWithCredential(credential);
+        Navigator.of(context).pushReplacementNamed('/home');
+      },
+      onVerificationFailed: (FirebaseAuthException e) {
+        setState(() {
+          errorMessage = e.message;
+        });
+      },
+      onCodeTimeOut: (String vId) {
+        verificationId = vId;
+      },
+    );
+  }
+
+  Future<void> verifyOtp() async {
     try {
-      if (isLogin) {
-        // Employer Login
-        await Auth().signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
-      } else {
-        // Employer Register
-        await Auth().createUserWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
-      }
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: _otpController.text,
+      );
+      await Auth().siginInWithCredential(credential);
       Navigator.of(context).pushReplacementNamed('/home');
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -42,33 +59,34 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isLogin ? 'Employer Authentication' : 'Employer Register'),
+        title: Text(isOtpSent ? 'Enter OTP' : 'Phone Authentication'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+            if (!isOtpSent)
+              TextField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Enter Phone Number',
+                  prefixText: '+',
+                ),
+              ),
+            if (isOtpSent)
+              TextField(
+                controller: _otpController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Enter OTP'),
+              ),
+            Text(
+              errorMessage ?? '',
+              style: TextStyle(color: Colors.red),
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            Text(errorMessage ?? '', style: TextStyle(color: Colors.red),),
             ElevatedButton(
-              onPressed: sigInInOrRegister,
-              child: Text(isLogin ? 'Login' : 'Register'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  isLogin = !isLogin;
-                });
-              }, 
-              child: Text(isLogin ? 'Need an account? Register' : 'Already have an account? Login'),
+              onPressed: isOtpSent ? verifyOtp : sentOtp,
+              child: Text(isOtpSent ? 'Verify OTP' : 'Send OTP'),
             ),
           ],
         ),

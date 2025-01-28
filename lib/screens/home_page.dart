@@ -142,7 +142,7 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Center(
               child: Text(
-                user?.email ?? 'User Email',
+                user?.phoneNumber ?? 'User Phone Number',
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white,

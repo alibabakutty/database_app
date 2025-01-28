@@ -18,6 +18,8 @@ dependencies:
   firebase_auth: ^5.4.1
   decimal: ^3.2.1
   intl: ^0.20.1
+  get: ^4.6.6
+  pinput: ^5.0.1
 
   # Cupertino Icons for iOS style icons
   cupertino_icons: ^1.0.8
@@ -31,7 +33,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "icons/publish_icon.png"
+  image_path: "icons/tracking_truck.png"
 
 flutter:
   # Ensures that Material Icons are available
