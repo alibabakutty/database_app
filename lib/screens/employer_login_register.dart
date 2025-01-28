@@ -18,7 +18,7 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
 
   Future<void> sentOtp() async {
     await Auth().verifyPhoneNo(
-      phoneNumber: '+${_phoneController.text}', // add country code
+      phoneNumber: '+91-${_phoneController.text}', // add country code
       onCodeSent: (String vId, int? resentToken) {
         setState(() {
           verificationId = vId;
@@ -71,7 +71,7 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
                   labelText: 'Enter Phone Number',
-                  prefixText: '+',
+                  prefixText: '+91-',
                 ),
               ),
             if (isOtpSent)

@@ -18,7 +18,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
 
   Future<void> sentOtp() async {
     await Auth().verifyPhoneNo(
-      phoneNumber: '+${_phoneController.text}', // add country code
+      phoneNumber: '+91-${_phoneController.text}', // add country code
       onCodeSent: (String vId, int? resentToken) {
         setState(() {
           verificationId = vId;
@@ -71,7 +71,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
                   labelText: 'Enter Phone Number',
-                  prefixText: '+',
+                  prefixText: '+91-',
                 ),
               ),
             if (isOtpSent)
@@ -85,7 +85,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
               style: TextStyle(color: Colors.red),
             ),
             ElevatedButton(
-              onPressed: isOtpSent ? verifyOtp : sentOtp, 
+              onPressed: isOtpSent ? verifyOtp : sentOtp,
               child: Text(isOtpSent ? 'Verify OTP' : 'Send OTP'),
             ),
           ],
