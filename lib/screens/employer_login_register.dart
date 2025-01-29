@@ -47,7 +47,7 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
   Future<void> sendOtp() async {
     try {
       await Auth().verifyPhoneNo(
-        phoneNumber: _phoneController.text.trim(),
+        phoneNumber: '+91-${_phoneController.text.trim()}',
         onCodeSent: (String verificationId, int? resendToken) {
           setState(() {
             this.verificationId = verificationId;
@@ -163,7 +163,10 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
               // Phone Number Authentication
               TextField(
                 controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Phone Number'),
+                decoration: const InputDecoration(
+                  labelText: 'Enter Phone Number',
+                  prefixText: '+91-',
+                ),
                 keyboardType: TextInputType.phone,
               ),
               if (isOtpSent) ...[

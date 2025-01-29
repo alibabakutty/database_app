@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 class InputField extends StatefulWidget {
   final String label;
+  final String hintText;
   final TextEditingController controller;
   final TextInputType keyboardType;
   final VoidCallback? onTab;
@@ -18,6 +19,7 @@ class InputField extends StatefulWidget {
   const InputField({
     super.key,
     required this.label,
+    this.hintText = '',
     required this.controller,
     this.keyboardType = TextInputType.text,
     this.onTab,
@@ -104,6 +106,8 @@ class _InputFieldState extends State<InputField> {
               horizontal: 8.0,
               vertical: 8.0, // Reduced vertical padding
             ),
+            hintText: widget.hintText,
+            hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
             prefixIcon: widget.showRupeeSymbol
                 ? const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.0),

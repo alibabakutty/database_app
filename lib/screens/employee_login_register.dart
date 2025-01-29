@@ -49,7 +49,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
   Future<void> sendOtp() async {
     try {
       await Auth().verifyPhoneNo(
-        phoneNumber: _phoneController.text.trim(),
+        phoneNumber: '+91-${_phoneController.text.trim()}',
         onCodeSent: (String verificationId, int? resendToken) {
           setState(() {
             this.verificationId = verificationId;
@@ -115,22 +115,24 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                  onPressed: () => setState(() => useEmail = true), 
+                  onPressed: () => setState(() => useEmail = true),
                   child: Text(
                     "Email Authentication",
                     style: TextStyle(
                       color: useEmail ? Colors.blue : Colors.grey,
-                      fontWeight: useEmail ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          useEmail ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                 ),
                 TextButton(
-                  onPressed: () => setState(() => useEmail = false), 
+                  onPressed: () => setState(() => useEmail = false),
                   child: Text(
                     "Phone No Authentication",
                     style: TextStyle(
                       color: useEmail ? Colors.grey : Colors.blue,
-                      fontWeight: useEmail ? FontWeight.normal : FontWeight.bold,
+                      fontWeight:
+                          useEmail ? FontWeight.normal : FontWeight.bold,
                     ),
                   ),
                 ),
@@ -148,7 +150,10 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
                 decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
               ),
-              Text(errorMessage ?? '', style: TextStyle(color: Colors.red),),
+              Text(
+                errorMessage ?? '',
+                style: TextStyle(color: Colors.red),
+              ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: signInOrRegisterWithEmail,
@@ -159,14 +164,19 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
                   setState(() {
                     isLogin = !isLogin;
                   });
-                }, 
-                child: Text(isLogin ? 'Need an account? Register' : 'Already have an account? Login'),
+                },
+                child: Text(isLogin
+                    ? 'Need an account? Register'
+                    : 'Already have an account? Login'),
               ),
             ] else ...[
               // Phone Number Authentication
               TextField(
                 controller: _phoneController,
-                decoration: const InputDecoration(labelText: 'Phone Number'),
+                decoration: const InputDecoration(
+                  labelText: 'Enter Phone Number',
+                  prefixText: '+91-',
+                ),
                 keyboardType: TextInputType.phone,
               ),
               if (isOtpSent) ...[
@@ -174,7 +184,10 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
                   controller: _otpController,
                   decoration: const InputDecoration(labelText: 'OTP'),
                 ),
-                Text(errorMessage ?? '', style: TextStyle(color: Colors.red),),
+                Text(
+                  errorMessage ?? '',
+                  style: TextStyle(color: Colors.red),
+                ),
                 ElevatedButton(
                   onPressed: verifyOtp,
                   child: Text('Verify OTP'),
