@@ -17,6 +17,7 @@ class WidgetTree extends StatelessWidget {
               onPressed: () => Navigator.pushNamed(context, '/employer_login'),
               child: const Text('Employer Login'),
             ),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/employee_login'),
               child: const Text('Employee Login'),

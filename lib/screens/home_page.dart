@@ -384,7 +384,9 @@ class HomePage extends StatelessWidget {
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d*\.?\d{0,3}$'),
+                              ),
                             ],
                             centerLabel: true,
                           ),
