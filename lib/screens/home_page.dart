@@ -292,7 +292,7 @@ class HomePage extends StatelessWidget {
                             width: MediaQuery.of(context).size.width * 0.62,
                             child: InputField(
                               label: '',
-                              hintText: 'Enter Vehicle Number (e.x) TN01-L1234',
+                              hintText: 'Enter Vehicle No. (e.x) TN01-L1234',
                               controller: vehicleNoController,
                               keyboardType: TextInputType.text,
                             ),
@@ -379,7 +379,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: 'Liters',
-                            hintText: 'Enter Liters (e.x) 1.5',
+                            hintText: '0.000',
                             controller: litersController,
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
@@ -397,7 +397,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: 'Amount',
-                            hintText: 'Enter Amount (e.x) 102.50',
+                            hintText: '0.00',
                             controller: amountController,
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
@@ -488,7 +488,7 @@ class HomePage extends StatelessWidget {
                             width: MediaQuery.of(context).size.width * 0.62,
                             child: InputField(
                               label: '',
-                              hintText: 'Enter Container Number (e.x) A123X4',
+                              hintText: 'Enter Container No. (e.x) A123X4',
                               controller: containerNoController,
                               keyboardType: TextInputType.text,
                             ),
@@ -519,7 +519,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: 'Actual',
-                            hintText: 'Actual Advance Amount',
+                            hintText: '0.00',
                             controller: actualAdvanceController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -539,7 +539,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: 'Approved',
-                            hintText: 'Approved Advance Amount',
+                            hintText: '0.00',
                             controller: approvedAdvanceController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -575,7 +575,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual M.T. Expenses Amount',
+                            hintText: '0.00',
                             controller: actualMtExpensesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -652,7 +652,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved M.T. Expenses Amount',
+                            hintText: '0.00',
                             controller: approvedMtExpensesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -745,7 +745,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual Toll Amount',
+                            hintText: '0.00',
                             controller: actualTollController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -822,7 +822,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved Toll Amount',
+                            hintText: '0.00',
                             controller: approvedTollController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -913,7 +913,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual Driver Charges Amount',
+                            hintText: '0.00',
                             controller: actualDriverChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -991,7 +991,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved Driver Charges Amount',
+                            hintText: '0.00',
                             controller: approvedDriverChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1082,7 +1082,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual Cleaner Charges Amount',
+                            hintText: '0.00',
                             controller: actualCleanerChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1159,7 +1159,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved Cleaner Charges Amount',
+                            hintText: '0.00',
                             controller: approvedCleanerChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1250,7 +1250,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual R.T.O./Police Amount',
+                            hintText: '0.00',
                             controller: actualRtoPoliceController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1327,7 +1327,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved R.T.O./Police Amount',
+                            hintText: '0.00',
                             controller: approvedRtoPoliceController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1418,7 +1418,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual Harbour Expenses Amount',
+                            hintText: '0.00',
                             controller: actualHarbourExpensesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1495,7 +1495,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved Harbour Expenses Amount',
+                            hintText: '0.00',
                             controller: approvedHarbourExpensesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1588,7 +1588,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual Driver Expenses Amount',
+                            hintText: '0.00',
                             controller: actualDriverExpensesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1665,7 +1665,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved Driver Expenses Amount',
+                            hintText: '0.00',
                             controller: approvedDriverExpensesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1756,7 +1756,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual Weight Charges Amount',
+                            hintText: '0.00',
                             controller: actualWeightChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1833,7 +1833,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved Weight Charges Amount',
+                            hintText: '0.00',
                             controller: approvedWeightChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -1924,7 +1924,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual Loading Charges Amount',
+                            hintText: '0.00',
                             controller: actualLoadingChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2001,7 +2001,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved Loading Charges Amount',
+                            hintText: '0.00',
                             controller: approvedLoadingChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2092,7 +2092,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual Unloading Charges Amount',
+                            hintText: '0.00',
                             controller: actualUnloadingChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2169,7 +2169,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved Unloading Charges Amount',
+                            hintText: '0.00',
                             controller: approvedUnloadingChargesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2260,7 +2260,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Actual Other Expenses Amount',
+                            hintText: '0.00',
                             controller: actualOtherExpensesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2337,7 +2337,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
-                            hintText: 'Approved Other Expenses Amount',
+                            hintText: '0.00',
                             controller: approvedOtherExpensesController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2428,6 +2428,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
+                            hintText: '0.00',
                             controller: actualTotalController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2449,6 +2450,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
+                            hintText: '0.00',
                             controller: approvedTotalController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2484,6 +2486,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
+                            hintText: '0.00',
                             controller: actualAdvanceController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2503,6 +2506,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
+                            hintText: '0.00',
                             controller: approvedAdvanceController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2536,6 +2540,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
+                            hintText: '0.00',
                             controller: actualBalanceController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),
@@ -2555,6 +2560,7 @@ class HomePage extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           child: InputField(
                             label: '',
+                            hintText: '0.00',
                             controller: approvedBalanceController,
                             keyboardType:
                                 TextInputType.numberWithOptions(decimal: true),

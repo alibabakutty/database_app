@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:database_app/authentication/auth.dart';
-import 'package:get/get.dart';
 
 class EmployeeLoginRegister extends StatefulWidget {
   const EmployeeLoginRegister({super.key});
