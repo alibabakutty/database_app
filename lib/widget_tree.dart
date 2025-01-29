@@ -14,12 +14,20 @@ class WidgetTree extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/employer_login'),
+              onPressed: () => Navigator.pushNamed(
+                context,
+                '/employer_login',
+                arguments: true, // Employer login
+              ),
               child: const Text('Employer Login'),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/employee_login'),
+              onPressed: () => Navigator.pushNamed(
+                context, 
+                '/employee_login',
+                arguments: false, // Employee login
+              ),
               child: const Text('Employee Login'),
             ),
           ],

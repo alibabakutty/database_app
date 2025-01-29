@@ -87,6 +87,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Retrieve `isEmployer` from arguments
+    final bool isEmployer =
+        (ModalRoute.of(context)?.settings.arguments as bool?) ?? false;
     final List<TextEditingController> controllers = [
       noController,
       jobNoController,
@@ -2468,199 +2471,205 @@ class HomePage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: const Text(
-                          'Advance',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Spacer(), // Push inputs to the right side
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: actualAdvanceController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            readOnly: true,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedAdvanceController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            readOnly: true,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: const Text(
-                          'Balance',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Spacer(),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: actualBalanceController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            readOnly: true,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedBalanceController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            readOnly: true,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Verified By',
+                  if (isEmployer)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: const Text(
+                            'Advance',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Spacer(),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
+                        ),
+                        Spacer(), // Push inputs to the right side
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
                             child: InputField(
                               label: '',
-                              hintText: 'Enter Verified By Name',
-                              controller: verifiedByController,
-                              keyboardType: TextInputType.text,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Passed',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Spacer(),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
-                            child: InputField(
-                              label: '',
-                              hintText: 'Enter Passed By Name',
-                              controller: passedByController,
-                              keyboardType: TextInputType.text,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Driver',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Spacer(),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
-                            child: InputField(
-                              label: '',
-                              controller: driverNameController,
-                              keyboardType: TextInputType.text,
+                              hintText: '0.00',
+                              controller: actualAdvanceController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
                               readOnly: true,
                             ),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                        const SizedBox(width: 16),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedAdvanceController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              readOnly: true,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 8),
+                  if (isEmployer)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: const Text(
+                            'Balance',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Spacer(),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: actualBalanceController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              readOnly: true,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedBalanceController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              readOnly: true,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 8),
+                  // Conditionally show "Verified By" field only for Employers
+                  if (isEmployer)
+                    Column(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Verified By',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Spacer(),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.62,
+                              child: InputField(
+                                label: '',
+                                hintText: 'Enter Verified By Name',
+                                controller: verifiedByController,
+                                keyboardType: TextInputType.text,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 8),
+                  if (isEmployer)
+                    Column(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Passed',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Spacer(),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.62,
+                              child: InputField(
+                                label: '',
+                                hintText: 'Enter Passed By Name',
+                                controller: passedByController,
+                                keyboardType: TextInputType.text,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 8),
+                  if (isEmployer)
+                    Column(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Driver',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Spacer(),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.62,
+                              child: InputField(
+                                label: '',
+                                controller: driverNameController,
+                                keyboardType: TextInputType.text,
+                                readOnly: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
 
                   // Submit button
                   const SizedBox(height: 20),
