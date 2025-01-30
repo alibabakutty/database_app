@@ -134,32 +134,62 @@ class _HomePageState extends State<HomePage> {
           containerNoController.text = tripSheet.containerNo ?? '';
           actualAdvanceController.text =
               tripSheet.actualAdvance.toStringAsFixed(2) ?? '';
+          approvedAdvanceController.text =
+              tripSheet.approvedAdvance.toStringAsFixed(2) ?? '';
           actualMtExpensesController.text =
               tripSheet.actualMtExpenses.toStringAsFixed(2) ?? '';
+          approvedMtExpensesController.text =
+              tripSheet.approvedMtExpenses.toStringAsFixed(2) ?? '';
           actualTollController.text =
               tripSheet.actualToll.toStringAsFixed(2) ?? '';
+          approvedTollController.text =
+              tripSheet.approvedToll.toStringAsFixed(2) ?? '';
           actualDriverChargesController.text =
               tripSheet.actualDriverCharges.toStringAsFixed(2) ?? '';
+          approvedDriverChargesController.text =
+              tripSheet.approvedDriverCharges.toStringAsFixed(2) ?? '';
           actualCleanerChargesController.text =
               tripSheet.actualCleanerCharges.toStringAsFixed(2) ?? '';
+          approvedCleanerChargesController.text =
+              tripSheet.approvedCleanerCharges.toStringAsFixed(2) ?? '';
           actualRtoPoliceController.text =
               tripSheet.actualRtoPolice.toStringAsFixed(2) ?? '';
+          approvedRtoPoliceController.text =
+              tripSheet.approvedRtoPolice.toStringAsFixed(2) ?? '';
           actualHarbourExpensesController.text =
               tripSheet.actualHarbourExpenses.toStringAsFixed(2) ?? '';
+          approvedHarbourExpensesController.text =
+              tripSheet.approvedHarbourExpenses.toStringAsFixed(2) ?? '';
           actualDriverExpensesController.text =
               tripSheet.actualDriverExpenses.toStringAsFixed(2) ?? '';
+          approvedDriverExpensesController.text =
+              tripSheet.approvedDriverExpenses.toStringAsFixed(2) ?? '';
           actualWeightChargesController.text =
               tripSheet.actualWeightCharges.toStringAsFixed(2) ?? '';
+          approvedWeightChargesController.text =
+              tripSheet.approvedWeightCharges.toStringAsFixed(2) ?? '';
           actualLoadingChargesController.text =
               tripSheet.actualLoadingCharges.toStringAsFixed(2) ?? '';
+          approvedLoadingChargesController.text =
+              tripSheet.approvedLoadingCharges.toStringAsFixed(2) ?? '';
           actualUnloadingChargesController.text =
               tripSheet.actualUnloadingCharges.toStringAsFixed(2) ?? '';
+          approvedUnloadingChargesController.text =
+              tripSheet.approvedUnloadingCharges.toStringAsFixed(2) ?? '';
           actualOtherExpensesController.text =
               tripSheet.actualOtherExpenses.toStringAsFixed(2) ?? '';
+          approvedOtherExpensesController.text =
+              tripSheet.approvedOtherExpenses.toStringAsFixed(2) ?? '';
           actualTotalController.text =
               tripSheet.actualTotal.toStringAsFixed(2) ?? '';
+          approvedTotalController.text =
+              tripSheet.approvedTotal.toStringAsFixed(2) ?? '';
           actualBalanceController.text =
               tripSheet.actualBalance.toStringAsFixed(2) ?? '';
+          approvedBalanceController.text =
+              tripSheet.approvedBalance.toStringAsFixed(2) ?? '';
+          verifiedByController.text = tripSheet.verifiedBy ?? '';
+          passedByController.text = tripSheet.passedBy ?? '';
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
