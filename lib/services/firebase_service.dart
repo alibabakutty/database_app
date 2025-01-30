@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:database_app/models/trip_sheet.dart';
 
@@ -11,8 +13,8 @@ class FirebaseService {
     try {
       await _db.collection('trip_sheet_entry').add(tripSheet.toMap());
       return true;
-    } catch (e) {
-      print('Error adding trip sheet: $e');
+    } catch (e, stackTrace) {
+      log('Error adding trip sheet: $e', stackTrace: stackTrace);
       return false;
     }
   }
@@ -25,8 +27,8 @@ class FirebaseService {
           .map((doc) =>
               TripSheet.fromFirestore(doc.data() as Map<String, dynamic>))
           .toList();
-    } catch (e) {
-      print('Error fetching trip sheets: $e');
+    } catch (e, stackTrace) {
+      log('Error fetching trip sheets: $e', stackTrace: stackTrace);
       return [];
     }
   }
@@ -45,8 +47,8 @@ class FirebaseService {
       } else {
         return null;
       }
-    } catch (e) {
-      print('Error fetching trip sheet by No.: $e');
+    } catch (e, stackTrace) {
+      log('Error fetching trip sheet by No.: $e', stackTrace: stackTrace);
       return null;
     }
   }
@@ -65,8 +67,8 @@ class FirebaseService {
       } else {
         return null;
       }
-    } catch (Query) {
-      print('Error fetching trip sheet by Job No.: $Query');
+    } catch (e, stackTrace) {
+      log('Error fetching trip sheet by Job No.: $e', stackTrace: stackTrace);
       return null;
     }
   }
@@ -86,8 +88,8 @@ class FirebaseService {
       } else {
         return false;
       }
-    } catch (e) {
-      print('Error updating trip sheet: $e');
+    } catch (e, stackTrace) {
+      log('Error updating trip sheet: $e', stackTrace: stackTrace);
       return false;
     }
   }
@@ -108,8 +110,8 @@ class FirebaseService {
       } else {
         return false;
       }
-    } catch (e) {
-      print('Error updating trip sheet by Job No.: $e');
+    } catch (e, stackTrace) {
+      log('Error updating trip sheet by Job No.: $e', stackTrace: stackTrace);
       return false;
     }
   }

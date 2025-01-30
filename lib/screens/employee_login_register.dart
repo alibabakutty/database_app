@@ -36,7 +36,9 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
           password: _passwordController.text.trim(),
         );
       }
-      Navigator.of(context).pushReplacementNamed('/home');
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -57,7 +59,9 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
         },
         onVerificationCompleted: (PhoneAuthCredential credential) async {
           await Auth().sigInWithCredential(credential);
-          Navigator.of(context).pushReplacementNamed('/home');
+          if (mounted) {
+            Navigator.of(context).pushReplacementNamed('/home');
+          }
         },
         onVerificationFailed: (FirebaseAuthException e) {
           setState(() {
@@ -86,7 +90,9 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
           smsCode: _otpController.text.trim(),
         );
         await Auth().sigInWithCredential(credential);
-        Navigator.of(context).pushReplacementNamed('/home');
+        if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
       } else {
         setState(() {
           errorMessage = 'Invalid OTP';

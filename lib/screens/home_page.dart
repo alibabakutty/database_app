@@ -14,15 +14,20 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
 
   Future<void> _signOut(BuildContext context) async {
     await Auth().signOut();
-    Navigator.of(context).pushReplacementNamed('/');
+
+    if (!context.mounted) {
+      return; // Ensure the widget is still mounted before navigation
+    } else {
+      Navigator.of(context).pushReplacementNamed('/');
+    }
   }
 
   final FirebaseService firebaseService = FirebaseService();
@@ -120,83 +125,81 @@ class _HomePageState extends State<HomePage> {
       TripSheet? tripSheet = await firebaseService.getTripSheetByNo(enteredNo);
       if (tripSheet != null) {
         setState(() {
-          jobNoController.text = tripSheet.jobNo ?? '';
-          dateController.text = tripSheet.date != null
-              ? DateFormat('dd-MM-yyyy').format(tripSheet.date)
-              : '';
-          vehicleNoController.text = tripSheet.vehicleNo ?? '';
-          fromLocationController.text = tripSheet.fromLocation ?? '';
-          toLocationController.text = tripSheet.toLocation ?? '';
-          litersController.text = tripSheet.liters.toStringAsFixed(3) ?? '';
-          amountController.text = tripSheet.amount.toStringAsFixed(2) ?? '';
-          driverNameController.text = tripSheet.driverName ?? '';
-          cleanerNameController.text = tripSheet.cleanerName ?? '';
-          containerNoController.text = tripSheet.containerNo ?? '';
+          jobNoController.text = tripSheet.jobNo;
+          dateController.text = DateFormat('dd-MM-yyyy').format(tripSheet.date);
+          vehicleNoController.text = tripSheet.vehicleNo;
+          fromLocationController.text = tripSheet.fromLocation;
+          toLocationController.text = tripSheet.toLocation;
+          litersController.text = tripSheet.liters.toStringAsFixed(3);
+          amountController.text = tripSheet.amount.toStringAsFixed(2);
+          driverNameController.text = tripSheet.driverName;
+          cleanerNameController.text = tripSheet.cleanerName;
+          containerNoController.text = tripSheet.containerNo;
           actualAdvanceController.text =
-              tripSheet.actualAdvance.toStringAsFixed(2) ?? '';
+              tripSheet.actualAdvance.toStringAsFixed(2);
           approvedAdvanceController.text =
-              tripSheet.approvedAdvance.toStringAsFixed(2) ?? '';
+              tripSheet.approvedAdvance.toStringAsFixed(2);
           actualMtExpensesController.text =
-              tripSheet.actualMtExpenses.toStringAsFixed(2) ?? '';
+              tripSheet.actualMtExpenses.toStringAsFixed(2);
           approvedMtExpensesController.text =
-              tripSheet.approvedMtExpenses.toStringAsFixed(2) ?? '';
-          actualTollController.text =
-              tripSheet.actualToll.toStringAsFixed(2) ?? '';
+              tripSheet.approvedMtExpenses.toStringAsFixed(2);
+          actualTollController.text = tripSheet.actualToll.toStringAsFixed(2);
           approvedTollController.text =
-              tripSheet.approvedToll.toStringAsFixed(2) ?? '';
+              tripSheet.approvedToll.toStringAsFixed(2);
           actualDriverChargesController.text =
-              tripSheet.actualDriverCharges.toStringAsFixed(2) ?? '';
+              tripSheet.actualDriverCharges.toStringAsFixed(2);
           approvedDriverChargesController.text =
-              tripSheet.approvedDriverCharges.toStringAsFixed(2) ?? '';
+              tripSheet.approvedDriverCharges.toStringAsFixed(2);
           actualCleanerChargesController.text =
-              tripSheet.actualCleanerCharges.toStringAsFixed(2) ?? '';
+              tripSheet.actualCleanerCharges.toStringAsFixed(2);
           approvedCleanerChargesController.text =
-              tripSheet.approvedCleanerCharges.toStringAsFixed(2) ?? '';
+              tripSheet.approvedCleanerCharges.toStringAsFixed(2);
           actualRtoPoliceController.text =
-              tripSheet.actualRtoPolice.toStringAsFixed(2) ?? '';
+              tripSheet.actualRtoPolice.toStringAsFixed(2);
           approvedRtoPoliceController.text =
-              tripSheet.approvedRtoPolice.toStringAsFixed(2) ?? '';
+              tripSheet.approvedRtoPolice.toStringAsFixed(2);
           actualHarbourExpensesController.text =
-              tripSheet.actualHarbourExpenses.toStringAsFixed(2) ?? '';
+              tripSheet.actualHarbourExpenses.toStringAsFixed(2);
           approvedHarbourExpensesController.text =
-              tripSheet.approvedHarbourExpenses.toStringAsFixed(2) ?? '';
+              tripSheet.approvedHarbourExpenses.toStringAsFixed(2);
           actualDriverExpensesController.text =
-              tripSheet.actualDriverExpenses.toStringAsFixed(2) ?? '';
+              tripSheet.actualDriverExpenses.toStringAsFixed(2);
           approvedDriverExpensesController.text =
-              tripSheet.approvedDriverExpenses.toStringAsFixed(2) ?? '';
+              tripSheet.approvedDriverExpenses.toStringAsFixed(2);
           actualWeightChargesController.text =
-              tripSheet.actualWeightCharges.toStringAsFixed(2) ?? '';
+              tripSheet.actualWeightCharges.toStringAsFixed(2);
           approvedWeightChargesController.text =
-              tripSheet.approvedWeightCharges.toStringAsFixed(2) ?? '';
+              tripSheet.approvedWeightCharges.toStringAsFixed(2);
           actualLoadingChargesController.text =
-              tripSheet.actualLoadingCharges.toStringAsFixed(2) ?? '';
+              tripSheet.actualLoadingCharges.toStringAsFixed(2);
           approvedLoadingChargesController.text =
-              tripSheet.approvedLoadingCharges.toStringAsFixed(2) ?? '';
+              tripSheet.approvedLoadingCharges.toStringAsFixed(2);
           actualUnloadingChargesController.text =
-              tripSheet.actualUnloadingCharges.toStringAsFixed(2) ?? '';
+              tripSheet.actualUnloadingCharges.toStringAsFixed(2);
           approvedUnloadingChargesController.text =
-              tripSheet.approvedUnloadingCharges.toStringAsFixed(2) ?? '';
+              tripSheet.approvedUnloadingCharges.toStringAsFixed(2);
           actualOtherExpensesController.text =
-              tripSheet.actualOtherExpenses.toStringAsFixed(2) ?? '';
+              tripSheet.actualOtherExpenses.toStringAsFixed(2);
           approvedOtherExpensesController.text =
-              tripSheet.approvedOtherExpenses.toStringAsFixed(2) ?? '';
-          actualTotalController.text =
-              tripSheet.actualTotal.toStringAsFixed(2) ?? '';
+              tripSheet.approvedOtherExpenses.toStringAsFixed(2);
+          actualTotalController.text = tripSheet.actualTotal.toStringAsFixed(2);
           approvedTotalController.text =
-              tripSheet.approvedTotal.toStringAsFixed(2) ?? '';
+              tripSheet.approvedTotal.toStringAsFixed(2);
           actualBalanceController.text =
-              tripSheet.actualBalance.toStringAsFixed(2) ?? '';
+              tripSheet.actualBalance.toStringAsFixed(2);
           approvedBalanceController.text =
-              tripSheet.approvedBalance.toStringAsFixed(2) ?? '';
-          verifiedByController.text = tripSheet.verifiedBy ?? '';
-          passedByController.text = tripSheet.passedBy ?? '';
+              tripSheet.approvedBalance.toStringAsFixed(2);
+          verifiedByController.text = tripSheet.verifiedBy;
+          passedByController.text = tripSheet.passedBy;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No data found for the entered No.'),
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No data found for the entered No.'),
+            ),
+          );
+        }
       }
     }
     // if jobNo is entered
@@ -205,17 +208,16 @@ class _HomePageState extends State<HomePage> {
       TripSheet? tripSheet = await firebaseService.getTripSheetByJobNo(jobNo);
       if (tripSheet != null) {
         setState(() {
-          noController.text = tripSheet.no.toString() ?? '';
-          dateController.text = tripSheet.date != null
-              ? DateFormat('dd-MM-yyyy').format(tripSheet.date)
-              : '';
+          dateController.text = DateFormat('dd-MM-yyyy').format(tripSheet.date);
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No data found for the entered Job No.'),
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No data found for the entered Job No.'),
+            ),
+          );
+        }
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
