@@ -1,4 +1,3 @@
-// lib/utils/validators.dart
 String? validateNo(String? value) {
   if (value == null || value.isEmpty) {
     return 'No is required';

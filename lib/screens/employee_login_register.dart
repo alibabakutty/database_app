@@ -105,100 +105,103 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
       appBar: AppBar(
         title: Text(isLogin ? 'Employee Login' : 'Employee Register'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            // Toggle between Email and Phone Authentication
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () => setState(() => useEmail = true),
-                  child: Text(
-                    "Email Authentication",
-                    style: TextStyle(
-                      color: useEmail ? Colors.blue : Colors.grey,
-                      fontWeight:
-                          useEmail ? FontWeight.bold : FontWeight.normal,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Toggle between Email and Phone Authentication
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () => setState(() => useEmail = true),
+                    child: Text(
+                      "Email Authentication",
+                      style: TextStyle(
+                        color: useEmail ? Colors.blue : Colors.grey,
+                        fontWeight:
+                            useEmail ? FontWeight.bold : FontWeight.normal,
+                      ),
                     ),
                   ),
-                ),
-                TextButton(
-                  onPressed: () => setState(() => useEmail = false),
-                  child: Text(
-                    "Phone No Authentication",
-                    style: TextStyle(
-                      color: useEmail ? Colors.grey : Colors.blue,
-                      fontWeight:
-                          useEmail ? FontWeight.normal : FontWeight.bold,
+                  TextButton(
+                    onPressed: () => setState(() => useEmail = false),
+                    child: Text(
+                      "Phone No Authentication",
+                      style: TextStyle(
+                        color: useEmail ? Colors.grey : Colors.blue,
+                        fontWeight:
+                            useEmail ? FontWeight.normal : FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
-            if (useEmail) ...[
-              // Email Authentication
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-              ),
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-              ),
-              Text(
-                errorMessage ?? '',
-                style: TextStyle(color: Colors.red),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: signInOrRegisterWithEmail,
-                child: Text(isLogin ? 'Login' : 'Register'),
-              ),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    isLogin = !isLogin;
-                  });
-                },
-                child: Text(isLogin
-                    ? 'Need an account? Register'
-                    : 'Already have an account? Login'),
-              ),
-            ] else ...[
-              // Phone Number Authentication
-              TextField(
-                controller: _phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter Phone Number',
-                  prefixText: '+91-',
-                ),
-                keyboardType: TextInputType.phone,
-              ),
-              if (isOtpSent) ...[
+              if (useEmail) ...[
+                // Email Authentication
                 TextField(
-                  controller: _otpController,
-                  decoration: const InputDecoration(labelText: 'OTP'),
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                ),
+                TextField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(labelText: 'Password'),
+                  obscureText: true,
                 ),
                 Text(
                   errorMessage ?? '',
                   style: TextStyle(color: Colors.red),
                 ),
+                const SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: verifyOtp,
-                  child: Text('Verify OTP'),
+                  onPressed: signInOrRegisterWithEmail,
+                  child: Text(isLogin ? 'Login' : 'Register'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isLogin = !isLogin;
+                    });
+                  },
+                  child: Text(isLogin
+                      ? 'Need an account? Register'
+                      : 'Already have an account? Login'),
                 ),
               ] else ...[
-                ElevatedButton(
-                  onPressed: sendOtp,
-                  child: Text('Send OTP'),
+                // Phone Number Authentication
+                TextField(
+                  controller: _phoneController,
+                  decoration: const InputDecoration(
+                    labelText: 'Enter Phone Number',
+                    prefixText: '+91-',
+                  ),
+                  keyboardType: TextInputType.phone,
                 ),
-              ],
-            ]
-          ],
+                if (isOtpSent) ...[
+                  TextField(
+                    controller: _otpController,
+                    decoration: const InputDecoration(labelText: 'OTP'),
+                  ),
+                  Text(
+                    errorMessage ?? '',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  ElevatedButton(
+                    onPressed: verifyOtp,
+                    child: Text('Verify OTP'),
+                  ),
+                ] else ...[
+                  ElevatedButton(
+                    onPressed: sendOtp,
+                    child: Text('Send OTP'),
+                  ),
+                ],
+              ]
+            ],
+          ),
         ),
       ),
     );

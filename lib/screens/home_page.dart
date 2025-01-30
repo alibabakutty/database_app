@@ -1,3 +1,5 @@
+import 'package:database_app/models/trip_sheet.dart';
+import 'package:database_app/services/firebase_service.dart';
 import 'package:database_app/utils/calculations.dart';
 import 'package:database_app/utils/submit_handler.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +10,14 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:database_app/authentication/auth.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
 
   Future<void> _signOut(BuildContext context) async {
@@ -18,6 +25,7 @@ class HomePage extends StatelessWidget {
     Navigator.of(context).pushReplacementNamed('/');
   }
 
+  final FirebaseService firebaseService = FirebaseService();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController noController = TextEditingController();
   final TextEditingController jobNoController = TextEditingController();
@@ -82,6 +90,111 @@ class HomePage extends StatelessWidget {
       TextEditingController();
   final TextEditingController verifiedByController = TextEditingController();
   final TextEditingController passedByController = TextEditingController();
+
+  bool isEmployer = false; // Store whether the user is an employer
+  int? tripSheetNo; // tripsheet is the object containing 'no' field
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Retrieve `isEmployer` from arguments
+    isEmployer = (ModalRoute.of(context)?.settings.arguments as bool?) ?? false;
+  }
+
+  // Function to Fetch Data from Firestore by No. or jobNo.
+  Future<void> fetchTripSheetData() async {
+    if (!isEmployer) return; // Fetch only for employer login
+
+    // // Check if 'No.' is entered
+    if (noController.text.isNotEmpty) {
+      int? enteredNo = int.tryParse(noController.text);
+      if (enteredNo == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter a valid No.'),
+          ),
+        );
+        return;
+      }
+
+      TripSheet? tripSheet = await firebaseService.getTripSheetByNo(enteredNo);
+      if (tripSheet != null) {
+        setState(() {
+          jobNoController.text = tripSheet.jobNo ?? '';
+          dateController.text = tripSheet.date != null
+              ? DateFormat('dd-MM-yyyy').format(tripSheet.date)
+              : '';
+          vehicleNoController.text = tripSheet.vehicleNo ?? '';
+          fromLocationController.text = tripSheet.fromLocation ?? '';
+          toLocationController.text = tripSheet.toLocation ?? '';
+          litersController.text = tripSheet.liters.toStringAsFixed(3) ?? '';
+          amountController.text = tripSheet.amount.toStringAsFixed(2) ?? '';
+          driverNameController.text = tripSheet.driverName ?? '';
+          cleanerNameController.text = tripSheet.cleanerName ?? '';
+          containerNoController.text = tripSheet.containerNo ?? '';
+          actualAdvanceController.text =
+              tripSheet.actualAdvance.toStringAsFixed(2) ?? '';
+          actualMtExpensesController.text =
+              tripSheet.actualMtExpenses.toStringAsFixed(2) ?? '';
+          actualTollController.text =
+              tripSheet.actualToll.toStringAsFixed(2) ?? '';
+          actualDriverChargesController.text =
+              tripSheet.actualDriverCharges.toStringAsFixed(2) ?? '';
+          actualCleanerChargesController.text =
+              tripSheet.actualCleanerCharges.toStringAsFixed(2) ?? '';
+          actualRtoPoliceController.text =
+              tripSheet.actualRtoPolice.toStringAsFixed(2) ?? '';
+          actualHarbourExpensesController.text =
+              tripSheet.actualHarbourExpenses.toStringAsFixed(2) ?? '';
+          actualDriverExpensesController.text =
+              tripSheet.actualDriverExpenses.toStringAsFixed(2) ?? '';
+          actualWeightChargesController.text =
+              tripSheet.actualWeightCharges.toStringAsFixed(2) ?? '';
+          actualLoadingChargesController.text =
+              tripSheet.actualLoadingCharges.toStringAsFixed(2) ?? '';
+          actualUnloadingChargesController.text =
+              tripSheet.actualUnloadingCharges.toStringAsFixed(2) ?? '';
+          actualOtherExpensesController.text =
+              tripSheet.actualOtherExpenses.toStringAsFixed(2) ?? '';
+          actualTotalController.text =
+              tripSheet.actualTotal.toStringAsFixed(2) ?? '';
+          actualBalanceController.text =
+              tripSheet.actualBalance.toStringAsFixed(2) ?? '';
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No data found for the entered No.'),
+          ),
+        );
+      }
+    }
+    // if jobNo is entered
+    else if (jobNoController.text.isNotEmpty) {
+      String jobNo = jobNoController.text;
+      TripSheet? tripSheet = await firebaseService.getTripSheetByJobNo(jobNo);
+      if (tripSheet != null) {
+        setState(() {
+          noController.text = tripSheet.no.toString() ?? '';
+          dateController.text = tripSheet.date != null
+              ? DateFormat('dd-MM-yyyy').format(tripSheet.date)
+              : '';
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No data found for the entered Job No.'),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter either No. or Job No.'),
+        ),
+      );
+    }
+  }
 
   final SubmitHandler submitHandler = SubmitHandler();
 
@@ -191,7 +304,7 @@ class HomePage extends StatelessWidget {
                           Spacer(),
                           SizedBox(
                             width: MediaQuery.of(context).size.width *
-                                0.62, // 50% of screen width
+                                0.60, // 50% of screen width
                             child: InputField(
                               label: '',
                               hintText: 'Enter Number (e.x) 123',
@@ -202,6 +315,14 @@ class HomePage extends StatelessWidget {
                               ],
                             ),
                           ),
+                          if (isEmployer)
+                            IconButton(
+                              onPressed: fetchTripSheetData,
+                              icon: const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              ),
+                            )
                         ],
                       ),
                     ],
@@ -222,7 +343,7 @@ class HomePage extends StatelessWidget {
                           ),
                           Spacer(),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: InputField(
                               label: '',
                               hintText: 'Enter Job Number. (e.x) K-123',
@@ -230,6 +351,14 @@ class HomePage extends StatelessWidget {
                               keyboardType: TextInputType.text,
                             ),
                           ),
+                          if (isEmployer)
+                            IconButton(
+                              onPressed: fetchTripSheetData,
+                              icon: const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              ),
+                            )
                         ],
                       ),
                     ],
@@ -250,7 +379,7 @@ class HomePage extends StatelessWidget {
                           ),
                           Spacer(),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: InputField(
                               label: '',
                               controller: dateController,
@@ -292,7 +421,7 @@ class HomePage extends StatelessWidget {
                           ),
                           Spacer(),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: InputField(
                               label: '',
                               hintText: 'Enter Vehicle No. (e.x) TN01-L1234',
@@ -320,7 +449,7 @@ class HomePage extends StatelessWidget {
                           ),
                           Spacer(),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: InputField(
                               label: '',
                               hintText: 'Enter From Location (e.x) Chennai',
@@ -348,7 +477,7 @@ class HomePage extends StatelessWidget {
                           ),
                           Spacer(),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: InputField(
                               label: '',
                               hintText: 'Enter To Location (e.x) Bangalore',
@@ -434,7 +563,7 @@ class HomePage extends StatelessWidget {
                           ),
                           Spacer(),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: InputField(
                               label: '',
                               hintText: 'Enter Driver Name',
@@ -462,7 +591,7 @@ class HomePage extends StatelessWidget {
                           ),
                           Spacer(),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: InputField(
                               label: '',
                               hintText: 'Enter Cleaner Name',
@@ -490,7 +619,7 @@ class HomePage extends StatelessWidget {
                           ),
                           Spacer(),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.62,
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: InputField(
                               label: '',
                               hintText: 'Enter Container No. (e.x) A123X4',
@@ -538,25 +667,26 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: 'Approved',
-                            hintText: '0.00',
-                            controller: approvedAdvanceController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: 'Approved',
+                              hintText: '0.00',
+                              controller: approvedAdvanceController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -651,82 +781,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedMtExpensesController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedMtExpensesController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -821,82 +953,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedTollController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedTollController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -990,82 +1124,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedDriverChargesController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedDriverChargesController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -1158,82 +1294,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedCleanerChargesController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedCleanerChargesController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -1326,82 +1464,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedRtoPoliceController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedRtoPoliceController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -1494,82 +1634,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedHarbourExpensesController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedHarbourExpensesController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -1664,82 +1806,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedDriverExpensesController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedDriverExpensesController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -1832,82 +1976,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedWeightChargesController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedWeightChargesController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -2000,82 +2146,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedLoadingChargesController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedLoadingChargesController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -2168,82 +2316,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedUnloadingChargesController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedUnloadingChargesController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -2336,82 +2486,84 @@ class HomePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedOtherExpensesController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}$')),
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            onChanged: (_) {
-                              calculateTotals(
-                                actualMtExpensesController:
-                                    actualMtExpensesController,
-                                approvedMtExpensesController:
-                                    approvedMtExpensesController,
-                                actualTollController: actualTollController,
-                                approvedTollController: approvedTollController,
-                                actualDriverChargesController:
-                                    actualDriverChargesController,
-                                approvedDriverChargesController:
-                                    approvedDriverChargesController,
-                                actualCleanerChargesController:
-                                    actualCleanerChargesController,
-                                approvedCleanerChargesController:
-                                    approvedCleanerChargesController,
-                                actualRtoPoliceController:
-                                    actualRtoPoliceController,
-                                approvedRtoPoliceController:
-                                    approvedRtoPoliceController,
-                                actualHarbourExpensesController:
-                                    actualHarbourExpensesController,
-                                approvedHarbourExpensesController:
-                                    approvedHarbourExpensesController,
-                                actualDriverExpensesController:
-                                    actualDriverExpensesController,
-                                approvedDriverExpensesController:
-                                    approvedDriverExpensesController,
-                                actualWeightChargesController:
-                                    actualWeightChargesController,
-                                approvedWeightChargesController:
-                                    approvedWeightChargesController,
-                                actualLoadingChargesController:
-                                    actualLoadingChargesController,
-                                approvedLoadingChargesController:
-                                    approvedLoadingChargesController,
-                                actualUnloadingChargesController:
-                                    actualUnloadingChargesController,
-                                approvedUnloadingChargesController:
-                                    approvedUnloadingChargesController,
-                                actualOtherExpensesController:
-                                    actualOtherExpensesController,
-                                approvedOtherExpensesController:
-                                    approvedOtherExpensesController,
-                                actualTotalController: actualTotalController,
-                                approvedTotalController:
-                                    approvedTotalController,
-                                actualAdvanceController:
-                                    actualAdvanceController,
-                                approvedAdvanceController:
-                                    approvedAdvanceController,
-                                actualBalanceController:
-                                    actualBalanceController,
-                                approvedBalanceController:
-                                    approvedBalanceController,
-                              );
-                            },
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedOtherExpensesController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d*\.?\d{0,2}$')),
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              onChanged: (_) {
+                                calculateTotals(
+                                  actualMtExpensesController:
+                                      actualMtExpensesController,
+                                  approvedMtExpensesController:
+                                      approvedMtExpensesController,
+                                  actualTollController: actualTollController,
+                                  approvedTollController:
+                                      approvedTollController,
+                                  actualDriverChargesController:
+                                      actualDriverChargesController,
+                                  approvedDriverChargesController:
+                                      approvedDriverChargesController,
+                                  actualCleanerChargesController:
+                                      actualCleanerChargesController,
+                                  approvedCleanerChargesController:
+                                      approvedCleanerChargesController,
+                                  actualRtoPoliceController:
+                                      actualRtoPoliceController,
+                                  approvedRtoPoliceController:
+                                      approvedRtoPoliceController,
+                                  actualHarbourExpensesController:
+                                      actualHarbourExpensesController,
+                                  approvedHarbourExpensesController:
+                                      approvedHarbourExpensesController,
+                                  actualDriverExpensesController:
+                                      actualDriverExpensesController,
+                                  approvedDriverExpensesController:
+                                      approvedDriverExpensesController,
+                                  actualWeightChargesController:
+                                      actualWeightChargesController,
+                                  approvedWeightChargesController:
+                                      approvedWeightChargesController,
+                                  actualLoadingChargesController:
+                                      actualLoadingChargesController,
+                                  approvedLoadingChargesController:
+                                      approvedLoadingChargesController,
+                                  actualUnloadingChargesController:
+                                      actualUnloadingChargesController,
+                                  approvedUnloadingChargesController:
+                                      approvedUnloadingChargesController,
+                                  actualOtherExpensesController:
+                                      actualOtherExpensesController,
+                                  approvedOtherExpensesController:
+                                      approvedOtherExpensesController,
+                                  actualTotalController: actualTotalController,
+                                  approvedTotalController:
+                                      approvedTotalController,
+                                  actualAdvanceController:
+                                      actualAdvanceController,
+                                  approvedAdvanceController:
+                                      approvedAdvanceController,
+                                  actualBalanceController:
+                                      actualBalanceController,
+                                  approvedBalanceController:
+                                      approvedBalanceController,
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -2449,25 +2601,26 @@ class HomePage extends StatelessWidget {
                       const SizedBox(
                         width: 16,
                       ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: InputField(
-                            label: '',
-                            hintText: '0.00',
-                            controller: approvedTotalController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            centerLabel: true,
-                            showRupeeSymbol: true,
-                            readOnly: true,
+                      if (isEmployer)
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.265,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InputField(
+                              label: '',
+                              hintText: '0.00',
+                              controller: approvedTotalController,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              centerLabel: true,
+                              showRupeeSymbol: true,
+                              readOnly: true,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -2600,7 +2753,7 @@ class HomePage extends StatelessWidget {
                             ),
                             Spacer(),
                             SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.62,
+                              width: MediaQuery.of(context).size.width * 0.60,
                               child: InputField(
                                 label: '',
                                 hintText: 'Enter Verified By Name',
@@ -2629,7 +2782,7 @@ class HomePage extends StatelessWidget {
                             ),
                             Spacer(),
                             SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.62,
+                              width: MediaQuery.of(context).size.width * 0.60,
                               child: InputField(
                                 label: '',
                                 hintText: 'Enter Passed By Name',
@@ -2658,7 +2811,7 @@ class HomePage extends StatelessWidget {
                             ),
                             Spacer(),
                             SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.62,
+                              width: MediaQuery.of(context).size.width * 0.60,
                               child: InputField(
                                 label: '',
                                 controller: driverNameController,
@@ -2676,8 +2829,27 @@ class HomePage extends StatelessWidget {
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
+                        int? tripSheetNo;
+                        if (isEmployer) {
+                          tripSheetNo = int.tryParse(controllers[0].text);
+                          if (tripSheetNo == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'No. is required for updating!',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                        }
                         submitHandler.handleSubmit(
-                            context, _formKey, controllers);
+                          context,
+                          _formKey,
+                          controllers,
+                          isEmployer, // Pass whether the user is an employer or employee
+                          tripSheetNo, // Pass the 'no' value if updating or null for creating
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
