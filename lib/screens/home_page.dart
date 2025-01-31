@@ -112,7 +112,7 @@ class HomePageState extends State<HomePage> {
 
     // // Check if 'No.' is entered
     if (noController.text.isNotEmpty) {
-      int? enteredNo = int.tryParse(noController.text);
+      int? enteredNo = int.tryParse(noController.text.trim());
       if (enteredNo == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -204,11 +204,84 @@ class HomePageState extends State<HomePage> {
     }
     // if jobNo is entered
     else if (jobNoController.text.isNotEmpty) {
-      String jobNo = jobNoController.text;
+      String? jobNo = jobNoController.text.trim();
+      if (jobNo.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter a valid Job No.'),
+          ),
+        );
+        return;
+      }
       TripSheet? tripSheet = await firebaseService.getTripSheetByJobNo(jobNo);
       if (tripSheet != null) {
         setState(() {
+          noController.text = tripSheet.no.toString();
           dateController.text = DateFormat('dd-MM-yyyy').format(tripSheet.date);
+          vehicleNoController.text = tripSheet.vehicleNo;
+          fromLocationController.text = tripSheet.fromLocation;
+          toLocationController.text = tripSheet.toLocation;
+          litersController.text = tripSheet.liters.toStringAsFixed(3);
+          amountController.text = tripSheet.amount.toStringAsFixed(2);
+          driverNameController.text = tripSheet.driverName;
+          cleanerNameController.text = tripSheet.cleanerName;
+          containerNoController.text = tripSheet.containerNo;
+          actualAdvanceController.text =
+              tripSheet.actualAdvance.toStringAsFixed(2);
+          approvedAdvanceController.text =
+              tripSheet.approvedAdvance.toStringAsFixed(2);
+          actualMtExpensesController.text =
+              tripSheet.actualMtExpenses.toStringAsFixed(2);
+          approvedMtExpensesController.text =
+              tripSheet.approvedMtExpenses.toStringAsFixed(2);
+          actualTollController.text = tripSheet.actualToll.toStringAsFixed(2);
+          approvedTollController.text =
+              tripSheet.approvedToll.toStringAsFixed(2);
+          actualDriverChargesController.text =
+              tripSheet.actualDriverCharges.toStringAsFixed(2);
+          approvedDriverChargesController.text =
+              tripSheet.approvedDriverCharges.toStringAsFixed(2);
+          actualCleanerChargesController.text =
+              tripSheet.actualCleanerCharges.toStringAsFixed(2);
+          approvedCleanerChargesController.text =
+              tripSheet.approvedCleanerCharges.toStringAsFixed(2);
+          actualRtoPoliceController.text =
+              tripSheet.actualRtoPolice.toStringAsFixed(2);
+          approvedRtoPoliceController.text =
+              tripSheet.approvedRtoPolice.toStringAsFixed(2);
+          actualHarbourExpensesController.text =
+              tripSheet.actualHarbourExpenses.toStringAsFixed(2);
+          approvedHarbourExpensesController.text =
+              tripSheet.approvedHarbourExpenses.toStringAsFixed(2);
+          actualDriverExpensesController.text =
+              tripSheet.actualDriverExpenses.toStringAsFixed(2);
+          approvedDriverExpensesController.text =
+              tripSheet.approvedDriverExpenses.toStringAsFixed(2);
+          actualWeightChargesController.text =
+              tripSheet.actualWeightCharges.toStringAsFixed(2);
+          approvedWeightChargesController.text =
+              tripSheet.approvedWeightCharges.toStringAsFixed(2);
+          actualLoadingChargesController.text =
+              tripSheet.actualLoadingCharges.toStringAsFixed(2);
+          approvedLoadingChargesController.text =
+              tripSheet.approvedLoadingCharges.toStringAsFixed(2);
+          actualUnloadingChargesController.text =
+              tripSheet.actualUnloadingCharges.toStringAsFixed(2);
+          approvedUnloadingChargesController.text =
+              tripSheet.approvedUnloadingCharges.toStringAsFixed(2);
+          actualOtherExpensesController.text =
+              tripSheet.actualOtherExpenses.toStringAsFixed(2);
+          approvedOtherExpensesController.text =
+              tripSheet.approvedOtherExpenses.toStringAsFixed(2);
+          actualTotalController.text = tripSheet.actualTotal.toStringAsFixed(2);
+          approvedTotalController.text =
+              tripSheet.approvedTotal.toStringAsFixed(2);
+          actualBalanceController.text =
+              tripSheet.actualBalance.toStringAsFixed(2);
+          approvedBalanceController.text =
+              tripSheet.approvedBalance.toStringAsFixed(2);
+          verifiedByController.text = tripSheet.verifiedBy;
+          passedByController.text = tripSheet.passedBy;
         });
       } else {
         if (mounted) {
@@ -359,7 +432,20 @@ class HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  // const SizedBox(height: 8),
+                  // Display 'OR' text only if isEmployer is true
+                  if (isEmployer)
+                    Center(
+                      child: const Text(
+                        'OR',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  // const SizedBox(height: 8),
                   Column(
                     children: [
                       Row(
@@ -716,6 +802,11 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedAdvanceController.text == '0.00') {
+                                  approvedAdvanceController.clear();
+                                }
+                              },
                             ),
                           ),
                         ),
@@ -830,6 +921,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedMtExpensesController.text ==
+                                    '0.00') {
+                                  approvedMtExpensesController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -1002,6 +1099,11 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedTollController.text == '0.00') {
+                                  approvedTollController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -1173,6 +1275,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedDriverChargesController.text ==
+                                    '0.00') {
+                                  approvedDriverChargesController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -1343,6 +1451,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedCleanerChargesController.text ==
+                                    '0.00') {
+                                  approvedCleanerChargesController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -1513,6 +1627,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedRtoPoliceController.text ==
+                                    '0.00') {
+                                  approvedRtoPoliceController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -1683,6 +1803,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedHarbourExpensesController.text ==
+                                    '0.00') {
+                                  approvedHarbourExpensesController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -1855,6 +1981,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedDriverExpensesController.text ==
+                                    '0.00') {
+                                  approvedDriverExpensesController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -2025,6 +2157,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedWeightChargesController.text ==
+                                    '0.00') {
+                                  approvedWeightChargesController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -2195,6 +2333,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedLoadingChargesController.text ==
+                                    '0.00') {
+                                  approvedLoadingChargesController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -2365,6 +2509,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedUnloadingChargesController.text ==
+                                    '0.00') {
+                                  approvedUnloadingChargesController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
@@ -2535,6 +2685,12 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              onTab: () {
+                                if (approvedOtherExpensesController.text ==
+                                    '0.00') {
+                                  approvedOtherExpensesController.clear();
+                                }
+                              },
                               onChanged: (_) {
                                 calculateTotals(
                                   actualMtExpensesController:
