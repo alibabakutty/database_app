@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:database_app/models/trip_sheet.dart';
 
@@ -55,10 +54,15 @@ class FirebaseService {
 
   // Fetch tripsheet by jobNo.
   Future<TripSheet?> getTripSheetByJobNo(String jobNo) async {
+    // Validate jobNo
+    if (jobNo.isEmpty) {
+      log('Job No. cannot be empty');
+      return null;
+    }
     try {
       QuerySnapshot snapshot = await _db
           .collection('trip_sheet_entry')
-          .where('jobNo', isEqualTo: jobNo)
+          .where('job_no', isEqualTo: jobNo.trim())
           .limit(1)
           .get();
       if (snapshot.docs.isNotEmpty) {
@@ -100,7 +104,7 @@ class FirebaseService {
     try {
       QuerySnapshot snapshot = await _db
           .collection('trip_sheet_entry')
-          .where('jobNo', isEqualTo: jobNo)
+          .where('job_no', isEqualTo: jobNo)
           .limit(1)
           .get();
       if (snapshot.docs.isNotEmpty) {
