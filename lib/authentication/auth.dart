@@ -40,14 +40,18 @@ class Auth {
   }
 
   /// Sign in with Email and Password
-  Future<void> signInWithEmailAndPassword({
+  Future<UserCredential> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      return await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message);
+    }
   }
 
   /// Create a new user with Email and Password
@@ -85,10 +89,15 @@ class Auth {
   }
 
   /// Sign in with Phone Number (OTP Authentication)
-  Future<User?> sigInWithCredential(PhoneAuthCredential credential) async {
-    UserCredential userCredential =
-        await _firebaseAuth.signInWithCredential(credential);
-    return userCredential.user;
+  Future<UserCredential> sigInWithCredential(
+      PhoneAuthCredential credential) async {
+    return await _firebaseAuth.signInWithCredential(credential);
+  }
+
+  /// Check if a user exists in Firestore
+  Future<bool> checkIfUserExists(String uid) async {
+    var userDoc = await _firestore.collection('users').doc(uid).get();
+    return userDoc.exists;
   }
 
   /// Sign out from Firebase Authentication

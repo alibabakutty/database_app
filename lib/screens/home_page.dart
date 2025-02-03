@@ -297,10 +297,8 @@ class HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(8.0),
             child: Center(
               child: Text(
-                userModel?.userName ??
-                    _auth.currentUser?.email ??
-                    _auth.currentUser?.phoneNumber ??
-                    'User Info',
+                (userModel?.userName != null && userModel!.userName.isNotEmpty)
+                ? userModel!.userName : userModel?.phoneNo ?? 'User Info',
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white,

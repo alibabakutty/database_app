@@ -72,7 +72,9 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
           });
         },
         onVerificationCompleted: (PhoneAuthCredential credential) async {
-          await Auth().sigInWithCredential(credential);
+          UserCredential userCredential =
+              await Auth().sigInWithCredential(credential);
+          await saveEmployeeToFireStore(userCredential);
           if (mounted) {
             Navigator.of(context)
                 .pushReplacementNamed('/home', arguments: false);
@@ -104,7 +106,9 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
           verificationId: verificationId!,
           smsCode: _otpController.text.trim(),
         );
-        await Auth().sigInWithCredential(credential);
+        UserCredential userCredential =
+            await Auth().sigInWithCredential(credential);
+        await saveEmployeeToFireStore(userCredential);
         if (mounted) {
           Navigator.of(context).pushReplacementNamed('/home', arguments: false);
         }
@@ -117,6 +121,25 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
       setState(() {
         errorMessage = e.toString();
       });
+    }
+  }
+
+  Future<void> saveEmployeeToFireStore(UserCredential userCredential) async {
+    if (userCredential.user != null) {
+      bool userExists =
+          await Auth().checkIfUserExists(userCredential.user!.uid);
+      if (!userExists) {
+        UserModel newUser = UserModel(
+          userNo: userCredential.user!.uid,
+          userName: "",
+          userEmail: "",
+          userPassword: "",
+          phoneNo: _phoneController.text.trim(),
+          isEmployer: false,
+          createdAt: DateTime.now(),
+        );
+        await Auth().addUser(newUser);
+      }
     }
   }
 
