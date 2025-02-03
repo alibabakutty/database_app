@@ -1,3 +1,4 @@
+import 'package:database_app/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:database_app/authentication/auth.dart';
@@ -10,6 +11,7 @@ class EmployerLoginRegister extends StatefulWidget {
 }
 
 class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
+  final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -30,10 +32,23 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
         );
       } else {
         // Employer Register
-        await Auth().createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await Auth().createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+
+        // Add user data to Firestore
+        UserModel newUser = UserModel(
+          userNo: userCredential.user!.uid,
+          userName: _userNameController.text.trim(),
+          userEmail: _emailController.text.trim(),
+          userPassword: _passwordController.text.trim(),
+          phoneNo: _phoneController.text.trim(),
+          isEmployer: true,
+          createdAt: DateTime.now(),
+        );
+        await Auth().addUser(newUser);
       }
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/home', arguments: true);
@@ -139,7 +154,7 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
                         children: [
                           Icon(
                             Icons.email,
-                            color: Colors.blue,
+                            color: Colors.indigoAccent,
                           ),
                           SizedBox(width: 8),
                           Text('Email'),
@@ -152,7 +167,7 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
                         children: [
                           Icon(
                             Icons.phone,
-                            color: Colors.blue,
+                            color: Colors.indigoAccent,
                           ),
                           SizedBox(width: 8),
                           Text('Phone No'),
@@ -164,6 +179,25 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
               ),
               const SizedBox(height: 20),
               if (useEmail) ...[
+                if (!isLogin) ...[
+                  TextField(
+                    controller: _userNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'User Name',
+                      prefixIcon: Icon(
+                        Icons.person,
+                        color: Colors.blueAccent,
+                      ),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 // Email Authentication
                 TextField(
                   controller: _emailController,
@@ -178,6 +212,7 @@ class _EmployerLoginRegisterState extends State<EmployerLoginRegister> {
                       borderSide: BorderSide(color: Colors.blueAccent),
                     ),
                   ),
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
                 TextField(

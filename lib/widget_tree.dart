@@ -20,17 +20,45 @@ class WidgetTree extends StatelessWidget {
         ),
         child: Center(
           child: Column(
+            // Wrap everything in a Column
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Logo and Heading in a Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/bt_logo.png',
+                      width: 70,
+                      height: 70,
+                    ),
+                  ),
+                  const SizedBox(width: 10), // Space between logo and text
+                  Text(
+                    'British Transport',
+                    style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10), // Space between title and subtitle
+
               Text(
-                'Select Login Type',
+                'Please select your login type',
                 style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
                   color: Colors.white,
                 ),
               ),
               const SizedBox(height: 30),
+
+              // Login Buttons
               _buildLoginButton(
                 context,
                 title: 'Employer Login',

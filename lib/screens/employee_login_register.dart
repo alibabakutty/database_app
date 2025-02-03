@@ -1,3 +1,4 @@
+import 'package:database_app/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:database_app/authentication/auth.dart';
@@ -10,6 +11,7 @@ class EmployeeLoginRegister extends StatefulWidget {
 }
 
 class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
+  final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -31,10 +33,22 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
         );
       } else {
         // Employee register
-        await Auth().createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await Auth().createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+
+        UserModel newUser = UserModel(
+          userNo: userCredential.user!.uid,
+          userName: _userNameController.text.trim(),
+          userEmail: _emailController.text.trim(),
+          userPassword: _passwordController.text.trim(),
+          phoneNo: _phoneController.text.trim(),
+          isEmployer: false,
+          createdAt: DateTime.now(),
+        );
+        await Auth().addUser(newUser);
       }
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/home');
@@ -60,7 +74,8 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
         onVerificationCompleted: (PhoneAuthCredential credential) async {
           await Auth().sigInWithCredential(credential);
           if (mounted) {
-            Navigator.of(context).pushReplacementNamed('/home');
+            Navigator.of(context)
+                .pushReplacementNamed('/home', arguments: false);
           }
         },
         onVerificationFailed: (FirebaseAuthException e) {
@@ -91,7 +106,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
         );
         await Auth().sigInWithCredential(credential);
         if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/home');
+          Navigator.of(context).pushReplacementNamed('/home', arguments: false);
         }
       } else {
         setState(() {
@@ -141,7 +156,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
-                          Icon(Icons.email, color: Colors.blue),
+                          Icon(Icons.email, color: Colors.indigoAccent),
                           SizedBox(width: 8),
                           Text("Email"),
                         ],
@@ -151,7 +166,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
-                          Icon(Icons.phone, color: Colors.blue),
+                          Icon(Icons.phone, color: Colors.indigoAccent),
                           SizedBox(width: 8),
                           Text("Phone"),
                         ],
@@ -162,6 +177,25 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
               ),
               const SizedBox(height: 20),
               if (useEmail) ...[
+                if (!isLogin) ...[
+                  TextField(
+                    controller: _userNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'User Name',
+                      prefixIcon: Icon(
+                        Icons.person,
+                        color: Colors.blueAccent,
+                      ),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 // Email Authentication
                 TextField(
                   controller: _emailController,
@@ -173,6 +207,7 @@ class _EmployeeLoginPageState extends State<EmployeeLoginRegister> {
                       borderSide: BorderSide(color: Colors.blueAccent),
                     ),
                   ),
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
                 TextField(

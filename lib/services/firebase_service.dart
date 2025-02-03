@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:database_app/models/trip_sheet.dart';
+import 'package:database_app/models/user_model.dart';
 
 class FirebaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -117,6 +118,50 @@ class FirebaseService {
     } catch (e, stackTrace) {
       log('Error updating trip sheet by Job No.: $e', stackTrace: stackTrace);
       return false;
+    }
+  }
+
+  // Add data to Firestore for users collection
+  Future<bool> addUser(UserModel user) async {
+    try {
+      String CollectionName = user.isEmployer ? 'employer' : 'employee';
+      await _db.collection('user').add(user.toMap());
+      return true;
+    } catch (e, stackTrace) {
+      log('Error adding user: $e', stackTrace: stackTrace);
+      return false;
+    }
+  }
+
+  // Fetch user by email (from either employers or employees)
+  Future<UserModel?> getUserByEmail(String email) async {
+    try {
+      // check in the employers collection
+      QuerySnapshot employerSnapshot = await _db
+          .collection('employers')
+          .where('user_email', isEqualTo: email)
+          .limit(1)
+          .get();
+      if (employerSnapshot.docs.isNotEmpty) {
+        return UserModel.fromFirestore(
+            employerSnapshot.docs.first.data() as Map<String, dynamic>);
+      }
+
+      // check in the employees collection
+      QuerySnapshot employeeSnapshot = await _db
+          .collection('employees')
+          .where('user_email', isEqualTo: email)
+          .limit(1)
+          .get();
+      if (employeeSnapshot.docs.isNotEmpty) {
+        return UserModel.fromFirestore(
+            employeeSnapshot.docs.first.data() as Map<String, dynamic>);
+      }
+      
+      return null;
+    } catch (e, stackTrace) {
+      log('Error fetching user by email: $e', stackTrace: stackTrace);
+      return null;
     }
   }
 }

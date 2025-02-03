@@ -1,4 +1,5 @@
 import 'package:database_app/models/trip_sheet.dart';
+import 'package:database_app/models/user_model.dart';
 import 'package:database_app/services/firebase_service.dart';
 import 'package:database_app/utils/calculations.dart';
 import 'package:database_app/utils/submit_handler.dart';
@@ -19,6 +20,23 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
+  final Auth _auth = Auth();
+  UserModel? userModel;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  // fetch user data from firestore using uid
+  Future<void> fetchUserData() async {
+    User? firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser != null) {
+      userModel = await _auth.getUserData(firebaseUser.uid);
+      setState(() {}); // Refresh UI after fetching data
+    }
+  }
 
   Future<void> _signOut(BuildContext context) async {
     await Auth().signOut();
@@ -279,7 +297,10 @@ class HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(8.0),
             child: Center(
               child: Text(
-                user?.email ?? user?.phoneNumber ?? 'User Info',
+                userModel?.userName ??
+                    _auth.currentUser?.email ??
+                    _auth.currentUser?.phoneNumber ??
+                    'User Info',
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white,
