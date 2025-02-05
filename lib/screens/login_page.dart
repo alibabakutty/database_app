@@ -2,7 +2,6 @@ import 'package:database_app/authentication/auth.dart';
 import 'package:database_app/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:database_app/services/firebase_service.dart';
 
 class LoginPage extends StatefulWidget {
   final bool isEmployer; // Determines if the user is an employer or employee
@@ -383,7 +382,7 @@ class _LoginPageState extends State<LoginPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                      ), 
+                      ),
                       child: const Text(
                         'Send OTP',
                         style: TextStyle(

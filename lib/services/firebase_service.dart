@@ -124,7 +124,7 @@ class FirebaseService {
   // Add data to Firestore for users collection
   Future<bool> addUser(UserModel user) async {
     try {
-      String CollectionName = user.isEmployer ? 'employer' : 'employee';
+      user.isEmployer ? 'employer' : 'employee';
       await _db.collection('user').add(user.toMap());
       return true;
     } catch (e, stackTrace) {
