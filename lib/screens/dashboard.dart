@@ -13,7 +13,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  late Future<List<TripSheet>> _tripSheetFuture;
   final User? user = Auth().currentUser;
   final Auth _auth = Auth();
   UserModel? userModel;
@@ -38,7 +37,6 @@ class _DashboardState extends State<Dashboard> {
 
   Future<void> fetchEntries() async {
     FirebaseService firebaseService = FirebaseService();
-
     // Fetch pending and approved entries
     List<TripSheet> pending =
         await firebaseService.getTripSheetsByApproval(false);
@@ -77,7 +75,7 @@ class _DashboardState extends State<Dashboard> {
             // Trip sheet Entry button
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushNamed(context, '/home', arguments: true);
               },
               child: const Text('Go to Trip Sheet Entry'),
             ),
@@ -151,6 +149,10 @@ class _DashboardState extends State<Dashboard> {
                     Icons.pending,
                     color: Colors.orange,
                   ),
+            onTap: () {
+              // pass the 'no' value to the home page
+              Navigator.pushNamed(context, '/home', arguments: true);
+            },
           ),
         );
       },

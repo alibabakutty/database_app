@@ -15,10 +15,10 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  HomePageState createState() => HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
   final Auth _auth = Auth();
   UserModel? userModel;
