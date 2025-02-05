@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TripSheet {
-  final int no;
+  late int no;
   final String jobNo;
   final DateTime date;
   final String vehicleNo;
@@ -87,7 +87,7 @@ class TripSheet {
     required this.approvedBalance,
     required this.verifiedBy,
     required this.passedBy,
-    this.isApproved = false,
+    required this.isApproved,
     required this.timestamp,
   });
 
@@ -199,7 +199,9 @@ class TripSheet {
           : double.tryParse(data['approved_balance'].toString()) ?? 0.0,
       verifiedBy: data['verified_by'] ?? '',
       passedBy: data['passed_by'] ?? '',
-      isApproved: data['is_approved'] ?? false,
+      isApproved: data['is_approved'] is String
+          ? data['is_approved'] == 'true'  // convert string to boolean
+          : data['is_approved'] ?? 'false', // default to false if not boolean
       timestamp: (data['timestamp'] as Timestamp).toDate(),
     );
   }

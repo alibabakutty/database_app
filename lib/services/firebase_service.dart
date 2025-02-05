@@ -22,7 +22,7 @@ class FirebaseService {
   // Fetch all data from Firestore if needed
   Future<List<TripSheet>> getTripSheets() async {
     try {
-      QuerySnapshot snapshot = await _db.collection('trip_sheets').get();
+      QuerySnapshot snapshot = await _db.collection('trip_sheets_entry').get();
       return snapshot.docs
           .map((doc) =>
               TripSheet.fromFirestore(doc.data() as Map<String, dynamic>))
@@ -75,6 +75,23 @@ class FirebaseService {
     } catch (e, stackTrace) {
       log('Error fetching trip sheet by Job No.: $e', stackTrace: stackTrace);
       return null;
+    }
+  }
+
+  // fetch trip sheets by approval status
+  Future<List<TripSheet>> getTripSheetsByApproval(bool isApproved) async {
+    try {
+      QuerySnapshot snapshot = await _db
+          .collection('trip_sheet_entry')
+          .where('is_approved', isEqualTo: isApproved)
+          .get();
+      return snapshot.docs.map((doc) {
+        return TripSheet.fromFirestore(doc.data() as Map<String, dynamic>);
+      }).toList();
+    } catch (e, stackTrace) {
+      log('Error fetching sheets by approval status: $e',
+          stackTrace: stackTrace);
+      return [];
     }
   }
 

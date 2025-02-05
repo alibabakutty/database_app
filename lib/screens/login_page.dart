@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
       }
       if (mounted) {
         Navigator.of(context).pushReplacementNamed(
-          '/home',
+          widget.isEmployer ? '/dashboard' : '/home',
           arguments: widget.isEmployer,
         ); // pass the isemployer flag
       }
@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
           await saveUserToFirestore(userCredential);
           if (mounted) {
             Navigator.of(context).pushReplacementNamed(
-              '/home',
+              widget.isEmployer ? '/dashboard' : '/home',
               arguments: widget.isEmployer, // pass the isemployer flag
             );
           }
@@ -118,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
         await saveUserToFirestore(userCredential);
         if (mounted) {
           Navigator.of(context).pushReplacementNamed(
-            '/home',
+            widget.isEmployer ? '/dashboard' : '/home',
             arguments: widget.isEmployer, // pass the isemployer flag
           );
         } else {

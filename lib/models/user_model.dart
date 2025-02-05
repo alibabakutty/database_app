@@ -20,11 +20,11 @@ class UserModel {
   // convert data from Firestore to UserModel object
   factory UserModel.fromFirestore(Map<String, dynamic> data) {
     return UserModel(
-      userNo: data['user_no'],
-      userName: data['user_name'],
-      userEmail: data['user_email'],
-      userPassword: data['user_password'],
-      phoneNo: data['phone_no'],
+      userNo: data['user_no'] ?? '',
+      userName: data['user_name'] ?? '',
+      userEmail: data['user_email'] ?? '',
+      userPassword: data['user_password'] ?? '',
+      phoneNo: data['phone_no'] ?? '',
       isEmployer: data['is_employer'] ?? false,
       createdAt: DateTime.parse(
           data['created_at'] ?? DateTime.now().toIso8601String()),
