@@ -157,7 +157,7 @@ class FirebaseService {
         return UserModel.fromFirestore(
             employeeSnapshot.docs.first.data() as Map<String, dynamic>);
       }
-      
+
       return null;
     } catch (e, stackTrace) {
       log('Error fetching user by email: $e', stackTrace: stackTrace);

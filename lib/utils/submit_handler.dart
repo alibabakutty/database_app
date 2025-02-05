@@ -115,6 +115,7 @@ class SubmitHandler {
             _parseDouble(controllers[38].text, 'Approved Balance', context),
         verifiedBy: controllers[39].text,
         passedBy: controllers[40].text,
+        isApproved: false,
         timestamp: DateTime.now(),
       );
       bool success = await _firebaseService.addTripSheet(newTripSheet);
@@ -211,6 +212,7 @@ class SubmitHandler {
             _parseDouble(controllers[38].text, 'Approved Balance', context),
         'verified_by': controllers[39].text,
         'passed_by': controllers[40].text,
+        'is_approved': true,
       };
 
       bool success = await _firebaseService.updateTripSheet(no, updatedData);
@@ -235,17 +237,16 @@ class SubmitHandler {
   int _parseInt(String value, String fieldName, BuildContext context) {
     final int? parsedValue = int.tryParse(value);
     if (parsedValue == null) {
-      throw Exception('Invalid $fieldName.');
+      throw Exception('Invalid $fieldName');
     }
     return parsedValue;
   }
 
   double _parseDouble(String value, String fieldName, BuildContext context) {
-    final double? parsedValue = double.tryParse(value);
-    // if (parsedValue == null) {
-    //   throw Exception('Invalid $fieldName.');
-    // }
-    return parsedValue ?? 0.0;
+    // Remove commas from the string before parsing
+    String sanitizedValue = value.replaceAll(',', '');
+    final double? parsedValue = double.tryParse(sanitizedValue);
+    return parsedValue ?? 0.00;
   }
 
   void _clearForm(List<TextEditingController> controllers) {

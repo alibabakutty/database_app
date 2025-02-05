@@ -298,7 +298,8 @@ class HomePageState extends State<HomePage> {
             child: Center(
               child: Text(
                 (userModel?.userName != null && userModel!.userName.isNotEmpty)
-                ? userModel!.userName : userModel?.phoneNo ?? 'User Info',
+                    ? userModel!.userName
+                    : userModel?.phoneNo ?? 'User Info',
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white,
@@ -367,20 +368,7 @@ class HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  // const SizedBox(height: 8),
-                  // Display 'OR' text only if isEmployer is true
-                  if (isEmployer)
-                    Center(
-                      child: const Text(
-                        'OR',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  // const SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Column(
                     children: [
                       Row(
@@ -559,7 +547,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -579,7 +567,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(width: 16), // Space between inputs
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -701,7 +689,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(), // Push inputs to the right side
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -716,13 +704,14 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                           ),
                         ),
                       ),
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -737,6 +726,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedAdvanceController.text == '0.00') {
                                   approvedAdvanceController.clear();
@@ -763,7 +753,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(), // Push inputs to the right side
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -778,6 +768,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -841,7 +832,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -856,6 +847,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedMtExpensesController.text ==
                                     '0.00') {
@@ -941,7 +933,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(), // Push inputs to the right side
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -956,6 +948,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -1019,7 +1012,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -1034,6 +1027,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedTollController.text == '0.00') {
                                   approvedTollController.clear();
@@ -1116,7 +1110,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(), // Push inputs to the right side
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -1132,6 +1126,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -1195,7 +1190,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -1210,6 +1205,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedDriverChargesController.text ==
                                     '0.00') {
@@ -1293,7 +1289,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(), // Push inputs to the right side
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -1308,6 +1304,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -1371,7 +1368,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -1386,6 +1383,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedCleanerChargesController.text ==
                                     '0.00') {
@@ -1469,7 +1467,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(), // Push inputs to the right side
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -1484,6 +1482,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -1547,7 +1546,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -1562,6 +1561,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedRtoPoliceController.text ==
                                     '0.00') {
@@ -1645,7 +1645,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -1660,6 +1660,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -1723,7 +1724,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -1738,6 +1739,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedHarbourExpensesController.text ==
                                     '0.00') {
@@ -1823,7 +1825,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -1838,6 +1840,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -1901,7 +1904,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -1916,6 +1919,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedDriverExpensesController.text ==
                                     '0.00') {
@@ -1999,7 +2003,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -2014,6 +2018,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -2077,7 +2082,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -2092,6 +2097,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedWeightChargesController.text ==
                                     '0.00') {
@@ -2175,7 +2181,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -2190,6 +2196,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -2253,7 +2260,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -2268,6 +2275,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedLoadingChargesController.text ==
                                     '0.00') {
@@ -2351,7 +2359,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -2366,6 +2374,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -2429,7 +2438,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -2444,6 +2453,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedUnloadingChargesController.text ==
                                     '0.00') {
@@ -2527,7 +2537,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -2542,6 +2552,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             onChanged: (_) {
                               calculateTotals(
                                 actualMtExpensesController:
@@ -2605,7 +2616,7 @@ class HomePageState extends State<HomePage> {
                       const SizedBox(width: 16),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -2620,6 +2631,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               onTab: () {
                                 if (approvedOtherExpensesController.text ==
                                     '0.00') {
@@ -2703,7 +2715,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       Spacer(),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.265,
+                        width: MediaQuery.of(context).size.width * 0.25,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: InputField(
@@ -2717,6 +2729,7 @@ class HomePageState extends State<HomePage> {
                             ],
                             centerLabel: true,
                             showRupeeSymbol: true,
+                            formatToTwoDecimals: true,
                             readOnly: true,
                           ),
                         ),
@@ -2726,7 +2739,7 @@ class HomePageState extends State<HomePage> {
                       ),
                       if (isEmployer)
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -2740,6 +2753,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               readOnly: true,
                             ),
                           ),
@@ -2763,7 +2777,7 @@ class HomePageState extends State<HomePage> {
                         ),
                         Spacer(), // Push inputs to the right side
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -2777,13 +2791,14 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               readOnly: true,
                             ),
                           ),
                         ),
                         const SizedBox(width: 16),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -2797,6 +2812,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               readOnly: true,
                             ),
                           ),
@@ -2818,7 +2834,7 @@ class HomePageState extends State<HomePage> {
                         ),
                         Spacer(),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -2832,13 +2848,14 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               readOnly: true,
                             ),
                           ),
                         ),
                         const SizedBox(width: 16),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.265,
+                          width: MediaQuery.of(context).size.width * 0.25,
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: InputField(
@@ -2852,6 +2869,7 @@ class HomePageState extends State<HomePage> {
                               ],
                               centerLabel: true,
                               showRupeeSymbol: true,
+                              formatToTwoDecimals: true,
                               readOnly: true,
                             ),
                           ),

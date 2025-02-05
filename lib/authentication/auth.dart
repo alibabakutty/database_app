@@ -35,7 +35,7 @@ class Auth {
       await addUser(newUser);
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -67,7 +67,7 @@ class Auth {
       );
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -113,7 +113,7 @@ class Auth {
           .doc(user.userNo.toString())
           .set(user.toMap());
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 

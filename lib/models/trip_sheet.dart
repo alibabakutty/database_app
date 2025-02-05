@@ -42,6 +42,7 @@ class TripSheet {
   final double approvedBalance;
   final String verifiedBy;
   final String passedBy;
+  final bool isApproved;
   final DateTime timestamp;
 
   TripSheet({
@@ -86,6 +87,7 @@ class TripSheet {
     required this.approvedBalance,
     required this.verifiedBy,
     required this.passedBy,
+    this.isApproved = false,
     required this.timestamp,
   });
 
@@ -197,6 +199,7 @@ class TripSheet {
           : double.tryParse(data['approved_balance'].toString()) ?? 0.0,
       verifiedBy: data['verified_by'] ?? '',
       passedBy: data['passed_by'] ?? '',
+      isApproved: data['is_approved'] ?? false,
       timestamp: (data['timestamp'] as Timestamp).toDate(),
     );
   }
@@ -245,6 +248,7 @@ class TripSheet {
       'approved_balance': approvedBalance,
       'verified_by': verifiedBy,
       'passed_by': passedBy,
+      'is_approved': isApproved,
       'timestamp': Timestamp.fromDate(timestamp),
     };
   }

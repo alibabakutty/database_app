@@ -33,16 +33,32 @@ class InputField extends StatefulWidget {
   });
 
   @override
-  _InputFieldState createState() => _InputFieldState();
+  State<InputField> createState() => _InputFieldState();
 }
 
 class _InputFieldState extends State<InputField> {
+  final NumberFormat _formatter = NumberFormat("#,##0.00", "en-IN");
+  late FocusNode _focusNode;
+
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode();
+    // Listener to detect when focus is lost(onBlur)
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        _formatAmount();
+      }
+    });
     if (widget.isDateField && widget.controller.text.isEmpty) {
       _setCurrentDate();
     }
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   void _setCurrentDate() {
@@ -72,6 +88,21 @@ class _InputFieldState extends State<InputField> {
     }
   }
 
+  // Function to format input to two decimal places and add commas
+  void _formatAmount() {
+    if (!widget.formatToTwoDecimals) return;
+
+    String input = widget.controller.text.replaceAll(',', '').trim();
+    if (input.isEmpty) return;
+
+    double? amount = double.tryParse(input);
+    if (amount != null) {
+      setState(() {
+        widget.controller.text = _formatter.format(amount);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -92,9 +123,17 @@ class _InputFieldState extends State<InputField> {
           ),
         TextFormField(
           controller: widget.controller,
-          keyboardType:
-              widget.isDateField ? TextInputType.none : widget.keyboardType,
-          inputFormatters: widget.inputFormatters,
+          focusNode: widget.formatToTwoDecimals
+              ? _focusNode
+              : null, // Attach FocusNode
+          keyboardType: widget.isDateField
+              ? TextInputType.none
+              : (widget.formatToTwoDecimals
+                  ? const TextInputType.numberWithOptions(decimal: true)
+                  : widget.keyboardType),
+          inputFormatters: widget.formatToTwoDecimals
+              ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$'))]
+              : widget.inputFormatters,
           readOnly: widget.isDateField || widget.readOnly,
           onChanged: widget.onChanged,
           decoration: InputDecoration(
@@ -127,6 +166,7 @@ class _InputFieldState extends State<InputField> {
                 widget.isDateField ? const Icon(Icons.calendar_today) : null,
           ),
           onTap: widget.isDateField ? () => _selectDate(context) : widget.onTab,
+          onEditingComplete: _formatAmount, // formats input on blur
           style: const TextStyle(fontSize: 14),
           validator: (value) {
             if (value == null || value.isEmpty) {
