@@ -343,6 +343,7 @@ class _LoginPageState extends State<LoginPage> {
                         borderSide: BorderSide(color: Colors.blueAccent),
                       ),
                     ),
+                    keyboardType: TextInputType.phone,
                   ),
                   const SizedBox(height: 16),
                   if (errorMessage!.isNotEmpty)

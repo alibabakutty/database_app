@@ -80,35 +80,42 @@ class _DashboardState extends State<Dashboard> {
               child: const Text('Go to Trip Sheet Entry'),
             ),
             const SizedBox(height: 20),
-            // Pending entries section
+            // Row to display pending and approved entries side by side
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  const Text(
-                    'Pending Entries',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  // Display pending entries
+                  // Left half - Pending Entries
                   Expanded(
-                    child: _buildEntriesList(isApproved: false),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Pending Entries',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: _buildEntriesList(isApproved: false),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Approved Entries Section
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Approved Entries',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  // Display approved entries
+                  const SizedBox(width: 16), // Space between the two halves
+                  // Right half - Approved Entries
                   Expanded(
-                    child: _buildEntriesList(isApproved: true),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Approved Entries',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Expanded(
+                          child: _buildEntriesList(isApproved: true),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
