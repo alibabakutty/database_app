@@ -1,7 +1,6 @@
 import 'package:database_app/authentication/auth.dart';
 import 'package:database_app/models/trip_sheet.dart';
 import 'package:database_app/models/user_model.dart';
-import 'package:database_app/screens/login_page.dart';
 import 'package:database_app/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
