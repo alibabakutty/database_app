@@ -116,6 +116,7 @@ class SubmitHandler {
         verifiedBy: controllers[39].text,
         passedBy: controllers[40].text,
         isApproved: false,
+        isEmployer: false,
         timestamp: DateTime.now(),
       );
       bool success = await _firebaseService.addTripSheet(newTripSheet);
@@ -213,6 +214,7 @@ class SubmitHandler {
         'verified_by': controllers[39].text,
         'passed_by': controllers[40].text,
         'is_approved': true,
+        'is_employer': true,
       };
 
       bool success = await _firebaseService.updateTripSheet(no, updatedData);

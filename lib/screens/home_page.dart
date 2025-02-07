@@ -22,11 +22,14 @@ class _HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
   final Auth _auth = Auth();
   UserModel? userModel;
+  var tripSheetData;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     fetchUserData();
+    _fetchTripSheetData();
   }
 
   // fetch user data from firestore using uid
@@ -35,6 +38,18 @@ class _HomePageState extends State<HomePage> {
     if (firebaseUser != null) {
       userModel = await _auth.getUserData(firebaseUser.uid);
       setState(() {}); // Refresh UI after fetching data
+    }
+  }
+
+  Future<void> _fetchTripSheetData() async {
+    // Retrieve 'no' from arguments
+    final tripSheetNo = ModalRoute.of(context)?.settings.arguments as int?;
+
+    if (tripSheetNo != null) {
+      tripSheetData = await FirebaseService().getTripSheetByNo(tripSheetNo);
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 

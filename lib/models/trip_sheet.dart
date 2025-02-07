@@ -43,6 +43,7 @@ class TripSheet {
   final String verifiedBy;
   final String passedBy;
   final bool isApproved;
+  final bool isEmployer;
   final DateTime timestamp;
 
   TripSheet({
@@ -88,15 +89,14 @@ class TripSheet {
     required this.verifiedBy,
     required this.passedBy,
     required this.isApproved,
+    required this.isEmployer,
     required this.timestamp,
   });
 
   // Convert data from Firestore to TripSheet
   factory TripSheet.fromFirestore(Map<String, dynamic> data) {
     return TripSheet(
-      no: data['no'] is int
-          ? data['no']
-          : int.tryParse(data['no'].toString()) ?? 0,
+      no: data['no'] as int,
       jobNo: data['job_no'] ?? '',
       date: (data['date'] as Timestamp).toDate(),
       vehicleNo: data['vehicle_no'] ?? '',
@@ -200,8 +200,11 @@ class TripSheet {
       verifiedBy: data['verified_by'] ?? '',
       passedBy: data['passed_by'] ?? '',
       isApproved: data['is_approved'] is String
-          ? data['is_approved'] == 'true'  // convert string to boolean
+          ? data['is_approved'] == 'true' // convert string to boolean
           : data['is_approved'] ?? 'false', // default to false if not boolean
+      isEmployer: data['is_employer'] is String
+          ? data['is_employer'] == 'true'
+          : data['is_employer'] ?? 'false',
       timestamp: (data['timestamp'] as Timestamp).toDate(),
     );
   }
@@ -251,6 +254,7 @@ class TripSheet {
       'verified_by': verifiedBy,
       'passed_by': passedBy,
       'is_approved': isApproved,
+      'is_employer': isEmployer,
       'timestamp': Timestamp.fromDate(timestamp),
     };
   }
