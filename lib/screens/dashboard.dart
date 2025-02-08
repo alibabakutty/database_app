@@ -1,7 +1,7 @@
 import 'package:database_app/authentication/auth.dart';
-import 'package:database_app/models/atrip_sheet.dart';
+import 'package:database_app/models/trip_sheet.dart';
 import 'package:database_app/models/user_model.dart';
-import 'package:database_app/screens/ahome_page.dart';
+import 'package:database_app/screens/home_page.dart';
 import 'package:database_app/services/firebase_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +17,8 @@ class _DashboardState extends State<Dashboard> {
   final User? user = Auth().currentUser;
   final Auth _auth = Auth();
   UserModel? userModel;
-  List<AtripSheet> pendingEntries = [];
-  List<AtripSheet> approvedEntries = [];
+  List<TripSheet> pendingEntries = [];
+  List<TripSheet> approvedEntries = [];
   bool isLoading = true;
   bool isEmployer = false;
 
@@ -40,10 +40,10 @@ class _DashboardState extends State<Dashboard> {
   Future<void> fetchEntries() async {
     FirebaseService firebaseService = FirebaseService();
     // Fetch pending and approved entries
-    List<AtripSheet> pending =
-        await firebaseService.getAtripSheetsByApproval(false);
-    List<AtripSheet> approved =
-        await firebaseService.getAtripSheetsByApproval(true);
+    List<TripSheet> pending =
+        await firebaseService.getTripSheetsByApproval(false);
+    List<TripSheet> approved =
+        await firebaseService.getTripSheetsByApproval(true);
 
     setState(() {
       pendingEntries = pending;
@@ -76,7 +76,7 @@ class _DashboardState extends State<Dashboard> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/ahome',
+                Navigator.pushNamed(context, '/home',
                     arguments: {'isEmployer': true});
               },
               child: Text('Go to trip sheet entry'),
@@ -129,7 +129,7 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildEntriesList({required bool isApproved}) {
     // Determine which list to display
-    List<AtripSheet> entries = isApproved ? approvedEntries : pendingEntries;
+    List<TripSheet> entries = isApproved ? approvedEntries : pendingEntries;
     // FirebaseService firebaseService = FirebaseService();
 
     if (isLoading) {
@@ -143,7 +143,7 @@ class _DashboardState extends State<Dashboard> {
     return ListView.builder(
       itemCount: entries.length,
       itemBuilder: (context, index) {
-        AtripSheet entry = entries[index];
+        TripSheet entry = entries[index];
         return Card(
           child: ListTile(
             title: Text("No: ${entry.no}, Job No: ${entry.jobNo}"),
@@ -163,7 +163,7 @@ class _DashboardState extends State<Dashboard> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const AhomePage(),
+                  builder: (context) => const HomePage(),
                   settings: RouteSettings(
                     arguments: {
                       'isEmployer': true,

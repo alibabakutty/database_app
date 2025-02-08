@@ -22,32 +22,9 @@ class _HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
   final Auth _auth = Auth();
   UserModel? userModel;
+  bool isApproved = false;
+  bool isEmployer = false;
   bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchUserData();
-  }
-
-  // fetch user data from firestore using uid
-  Future<void> fetchUserData() async {
-    User? firebaseUser = FirebaseAuth.instance.currentUser;
-    if (firebaseUser != null) {
-      userModel = await _auth.getUserData(firebaseUser.uid);
-      setState(() {}); // Refresh UI after fetching data
-    }
-  }
-
-  Future<void> _signOut(BuildContext context) async {
-    await Auth().signOut();
-
-    if (!context.mounted) {
-      return; // Ensure the widget is still mounted before navigation
-    } else {
-      Navigator.of(context).pushReplacementNamed('/');
-    }
-  }
 
   final FirebaseService firebaseService = FirebaseService();
   final _formKey = GlobalKey<FormState>();
@@ -115,15 +92,175 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController verifiedByController = TextEditingController();
   final TextEditingController passedByController = TextEditingController();
 
-  bool isEmployer = false; // Store whether the user is an employer
-  int? tripSheetNo; // tripsheet is the object containing 'no' field
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Retrieve `isEmployer` from arguments
-    isEmployer = (ModalRoute.of(context)?.settings.arguments as bool?) ?? false;
+    final args = ModalRoute.of(context)?.settings.arguments;
+
+    if (args is bool) {
+      // employee login case
+      setState(() {
+        isEmployer = args;
+      });
+    } else if (args is Map<String, dynamic>) {
+      // employer login case
+      if (args.isNotEmpty) {
+        setState(() {
+          isEmployer = args['isEmployer'] ?? false;
+        });
+
+        final tripSheetNo = args['tripSheetNo'] as int?;
+        if (tripSheetNo != null && noController.text.isEmpty) {
+          noController.text = tripSheetNo.toString();
+          _fetchTripSheetData(tripSheetNo);
+        }
+      }
+    }
   }
+
+  // fetch user data from firestore using uid
+  Future<void> fetchUserData() async {
+    User? firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser != null) {
+      userModel = await _auth.getUserData(firebaseUser.uid);
+      setState(() {}); // Refresh UI after fetching data
+    }
+  }
+
+  Future<void> _signOut(BuildContext context) async {
+    await Auth().signOut();
+
+    if (!context.mounted) {
+      return; // Ensure the widget is still mounted before navigation
+    } else {
+      Navigator.of(context).pushReplacementNamed('/');
+    }
+  }
+
+  // Fetch trip sheet data using the no value
+  Future<void> _fetchTripSheetData(int tripSheetNo) async {
+    TripSheet? tripSheet = await firebaseService.getTripSheetByNo(tripSheetNo);
+
+    if (tripSheet != null) {
+      setState(() {
+        noController.text = tripSheet.no.toString();
+        jobNoController.text = tripSheet.jobNo;
+        dateController.text = DateFormat('dd-MM-yyyy').format(tripSheet.date);
+        vehicleNoController.text = tripSheet.vehicleNo;
+        fromLocationController.text = tripSheet.fromLocation;
+        toLocationController.text = tripSheet.toLocation;
+        litersController.text = tripSheet.liters.toStringAsFixed(3);
+        amountController.text = tripSheet.amount.toStringAsFixed(2);
+        driverNameController.text = tripSheet.driverName;
+        cleanerNameController.text = tripSheet.cleanerName;
+        containerNoController.text = tripSheet.containerNo;
+        actualAdvanceController.text =
+            tripSheet.actualAdvance.toStringAsFixed(2);
+        approvedAdvanceController.text =
+            tripSheet.approvedAdvance.toStringAsFixed(2);
+        actualMtExpensesController.text =
+            tripSheet.actualMtExpenses.toStringAsFixed(2);
+        approvedMtExpensesController.text =
+            tripSheet.approvedMtExpenses.toStringAsFixed(2);
+        actualTollController.text = tripSheet.actualToll.toStringAsFixed(2);
+        approvedTollController.text = tripSheet.approvedToll.toStringAsFixed(2);
+        actualDriverChargesController.text =
+            tripSheet.actualDriverCharges.toStringAsFixed(2);
+        approvedDriverChargesController.text =
+            tripSheet.approvedDriverCharges.toStringAsFixed(2);
+        actualCleanerChargesController.text =
+            tripSheet.actualCleanerCharges.toStringAsFixed(2);
+        approvedCleanerChargesController.text =
+            tripSheet.approvedCleanerCharges.toStringAsFixed(2);
+        actualRtoPoliceController.text =
+            tripSheet.actualRtoPolice.toStringAsFixed(2);
+        approvedRtoPoliceController.text =
+            tripSheet.approvedRtoPolice.toStringAsFixed(2);
+        actualHarbourExpensesController.text =
+            tripSheet.actualHarbourExpenses.toStringAsFixed(2);
+        approvedHarbourExpensesController.text =
+            tripSheet.approvedHarbourExpenses.toStringAsFixed(2);
+        actualDriverExpensesController.text =
+            tripSheet.actualDriverExpenses.toStringAsFixed(2);
+        approvedDriverExpensesController.text =
+            tripSheet.approvedDriverExpenses.toStringAsFixed(2);
+        actualWeightChargesController.text =
+            tripSheet.actualWeightCharges.toStringAsFixed(2);
+        approvedWeightChargesController.text =
+            tripSheet.approvedWeightCharges.toStringAsFixed(2);
+        actualLoadingChargesController.text =
+            tripSheet.actualLoadingCharges.toStringAsFixed(2);
+        approvedLoadingChargesController.text =
+            tripSheet.approvedLoadingCharges.toStringAsFixed(2);
+        actualUnloadingChargesController.text =
+            tripSheet.actualUnloadingCharges.toStringAsFixed(2);
+        approvedUnloadingChargesController.text =
+            tripSheet.approvedUnloadingCharges.toStringAsFixed(2);
+        actualOtherExpensesController.text =
+            tripSheet.actualOtherExpenses.toStringAsFixed(2);
+        approvedOtherExpensesController.text =
+            tripSheet.approvedOtherExpenses.toStringAsFixed(2);
+        actualTotalController.text = tripSheet.actualTotal.toStringAsFixed(2);
+        approvedTotalController.text =
+            tripSheet.approvedTotal.toStringAsFixed(2);
+        actualBalanceController.text =
+            tripSheet.actualBalance.toStringAsFixed(2);
+        approvedBalanceController.text =
+            tripSheet.approvedBalance.toStringAsFixed(2);
+        verifiedByController.text = tripSheet.verifiedBy;
+        passedByController.text = tripSheet.passedBy;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No trip sheet found.')),
+      );
+    }
+  }
+
+  // Function to Fetch Data from Firestore by No. or jobNo.
+  Future<void> fetchTripSheetData() async {
+    if (!isEmployer) return; // Fetch only for employer login
+
+    TripSheet? tripSheet;
+
+    if (noController.text.isNotEmpty) {
+      int? enteredNo = int.tryParse(noController.text.trim());
+      if (enteredNo == null) {
+        showSnackBar('Please enter a valid No.');
+        return;
+      }
+      tripSheet = await firebaseService.getTripSheetByNo(enteredNo);
+    } else if (jobNoController.text.isNotEmpty) {
+      String enteredJobNo = jobNoController.text.trim();
+      if (enteredJobNo.isEmpty) {
+        showSnackBar('Please enter a valid Job No.');
+        return;
+      }
+      tripSheet = await firebaseService.getTripSheetByJobNo(enteredJobNo);
+    } else {
+      showSnackBar('Please enter either No. or Job No.');
+      return;
+    }
+
+    if (tripSheet != null && mounted) {
+      setState(() {
+        populateFields(tripSheet);
+      });
+    } else {
+      showSnackBar('No data found for the entered details.');
+    }
+  }
+
+  int? tripSheetNo; // tripsheet is the object containing 'no' field
 
 // Helper function to populate fields
   void populateFields(TripSheet? tripSheet) {
@@ -206,9 +343,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Retrieve `isEmployer` from arguments
-    final bool isEmployer =
-        (ModalRoute.of(context)?.settings.arguments as bool?) ?? false;
     final List<TextEditingController> controllers = [
       noController,
       jobNoController,
@@ -323,6 +457,14 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                           ),
+                          if (isEmployer)
+                            IconButton(
+                              onPressed: fetchTripSheetData,
+                              icon: const Icon(
+                                Icons.content_paste_search_outlined,
+                                color: Colors.black,
+                              ),
+                            ),
                         ],
                       ),
                     ],
@@ -351,6 +493,14 @@ class _HomePageState extends State<HomePage> {
                               keyboardType: TextInputType.text,
                             ),
                           ),
+                          if (isEmployer)
+                            IconButton(
+                              onPressed: fetchTripSheetData,
+                              icon: const Icon(
+                                Icons.content_paste_search_outlined,
+                                color: Colors.black,
+                              ),
+                            ),
                         ],
                       ),
                     ],
