@@ -1,4 +1,5 @@
 import 'package:database_app/firebase_options.dart';
+import 'package:database_app/screens/ahome_page.dart';
 import 'package:database_app/screens/dashboard.dart';
 import 'package:database_app/screens/home_page.dart';
 import 'package:database_app/screens/login_page.dart';
@@ -32,6 +33,7 @@ class DatabaseApp extends StatelessWidget {
             const LoginPage(isEmployer: false), // Employee Login page route
         '/dashboard': (context) => const Dashboard(),
         '/home': (context) => HomePage(), // Home page route
+        '/ahome': (context) => AhomePage(),
       },
     );
   }

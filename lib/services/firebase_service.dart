@@ -1,12 +1,23 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:database_app/models/atrip_sheet.dart';
 import 'package:database_app/models/trip_sheet.dart';
 import 'package:database_app/models/user_model.dart';
+import 'package:flutter/material.dart';
 
 class FirebaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   FirebaseService();
+
+  // Navigate to home with trip sheet data
+  void navigateToHome(BuildContext context, bool isApproved, int no) {
+    Navigator.pushNamed(context, '/ahome', arguments: {
+      'is_approved': isApproved,
+      'is_employer': true,
+      'no': no,
+    });
+  }
 
   // Add data to Firestore
   Future<bool> addTripSheet(TripSheet tripSheet) async {
@@ -19,16 +30,46 @@ class FirebaseService {
     }
   }
 
-  // Fetch all data from Firestore if needed
-  Future<List<TripSheet>> getTripSheets() async {
+  Future<bool> saveTripSheet(AtripSheet atripSheet) async {
     try {
-      QuerySnapshot snapshot = await _db.collection('trip_sheets_entry').get();
-      return snapshot.docs
-          .map((doc) =>
-              TripSheet.fromFirestore(doc.data() as Map<String, dynamic>))
-          .toList();
+      await _db.collection('atrip_sheet').add(atripSheet.toMap());
+      return true;
     } catch (e, stackTrace) {
-      log('Error fetching trip sheets: $e', stackTrace: stackTrace);
+      log('Error adding atrip sheet: $e', stackTrace: stackTrace);
+      return false;
+    }
+  }
+
+  // fetch trip sheets by approval status
+  Future<List<TripSheet>> getTripSheetsByApproval(bool isApproved) async {
+    try {
+      QuerySnapshot snapshot = await _db
+          .collection('trip_sheet_entry')
+          .where('is_approved', isEqualTo: isApproved)
+          .get();
+      return snapshot.docs.map((doc) {
+        return TripSheet.fromFirestore(doc.data() as Map<String, dynamic>);
+      }).toList();
+    } catch (e, stackTrace) {
+      log('Error fetching sheets by approval status: $e',
+          stackTrace: stackTrace);
+      return [];
+    }
+  }
+
+  // fetch trip sheets by approval status
+  Future<List<AtripSheet>> getAtripSheetsByApproval(bool isApproved) async {
+    try {
+      QuerySnapshot snapshot = await _db
+          .collection('atrip_sheet')
+          .where('is_approved', isEqualTo: isApproved)
+          .get();
+      return snapshot.docs.map((doc) {
+        return AtripSheet.fromFirestore(doc.data() as Map<String, dynamic>);
+      }).toList();
+    } catch (e, stackTrace) {
+      log('Error fetching sheets by approval status: $e',
+          stackTrace: stackTrace);
       return [];
     }
   }
@@ -43,6 +84,26 @@ class FirebaseService {
           .get();
       if (snapshot.docs.isNotEmpty) {
         return TripSheet.fromFirestore(
+            snapshot.docs.first.data() as Map<String, dynamic>);
+      } else {
+        return null;
+      }
+    } catch (e, stackTrace) {
+      log('Error fetching trip sheet by No.: $e', stackTrace: stackTrace);
+      return null;
+    }
+  }
+
+  // Fetch a single TripSheet by "No."
+  Future<AtripSheet?> getAtripSheetByNo(int no) async {
+    try {
+      QuerySnapshot snapshot = await _db
+          .collection('atrip_sheet')
+          .where('no', isEqualTo: no)
+          .limit(1)
+          .get();
+      if (snapshot.docs.isNotEmpty) {
+        return AtripSheet.fromFirestore(
             snapshot.docs.first.data() as Map<String, dynamic>);
       } else {
         return null;
@@ -75,23 +136,6 @@ class FirebaseService {
     } catch (e, stackTrace) {
       log('Error fetching trip sheet by Job No.: $e', stackTrace: stackTrace);
       return null;
-    }
-  }
-
-  // fetch trip sheets by approval status
-  Future<List<TripSheet>> getTripSheetsByApproval(bool isApproved) async {
-    try {
-      QuerySnapshot snapshot = await _db
-          .collection('trip_sheet_entry')
-          .where('is_approved', isEqualTo: isApproved)
-          .get();
-      return snapshot.docs.map((doc) {
-        return TripSheet.fromFirestore(doc.data() as Map<String, dynamic>);
-      }).toList();
-    } catch (e, stackTrace) {
-      log('Error fetching sheets by approval status: $e',
-          stackTrace: stackTrace);
-      return [];
     }
   }
 
@@ -134,6 +178,29 @@ class FirebaseService {
       }
     } catch (e, stackTrace) {
       log('Error updating trip sheet by Job No.: $e', stackTrace: stackTrace);
+      return false;
+    }
+  }
+
+  // update Atripsheet in firestore
+  Future<bool> updateAtripSheetByNo(
+      int no, Map<String, dynamic> updatedData) async {
+    try {
+      QuerySnapshot snapshot = await _db
+          .collection('atrip_sheet')
+          .where('no', isEqualTo: no)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        String docId = snapshot.docs.first.id;
+        await _db.collection('atrip_sheet').doc(docId).update(updatedData);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e, stackTrace) {
+      log('Error updating Atrip sheet by No.: $e', stackTrace: stackTrace);
       return false;
     }
   }

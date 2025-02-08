@@ -22,14 +22,12 @@ class _HomePageState extends State<HomePage> {
   final User? user = Auth().currentUser;
   final Auth _auth = Auth();
   UserModel? userModel;
-  var tripSheetData;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     fetchUserData();
-    _fetchTripSheetData();
   }
 
   // fetch user data from firestore using uid
@@ -38,18 +36,6 @@ class _HomePageState extends State<HomePage> {
     if (firebaseUser != null) {
       userModel = await _auth.getUserData(firebaseUser.uid);
       setState(() {}); // Refresh UI after fetching data
-    }
-  }
-
-  Future<void> _fetchTripSheetData() async {
-    // Retrieve 'no' from arguments
-    final tripSheetNo = ModalRoute.of(context)?.settings.arguments as int?;
-
-    if (tripSheetNo != null) {
-      tripSheetData = await FirebaseService().getTripSheetByNo(tripSheetNo);
-      setState(() {
-        isLoading = false;
-      });
     }
   }
 
@@ -137,40 +123,6 @@ class _HomePageState extends State<HomePage> {
     super.didChangeDependencies();
     // Retrieve `isEmployer` from arguments
     isEmployer = (ModalRoute.of(context)?.settings.arguments as bool?) ?? false;
-  }
-
-  // Function to Fetch Data from Firestore by No. or jobNo.
-  Future<void> fetchTripSheetData() async {
-    if (!isEmployer) return; // Fetch only for employer login
-
-    TripSheet? tripSheet;
-
-    if (noController.text.isNotEmpty) {
-      int? enteredNo = int.tryParse(noController.text.trim());
-      if (enteredNo == null) {
-        showSnackBar('Please enter a valid No.');
-        return;
-      }
-      tripSheet = await firebaseService.getTripSheetByNo(enteredNo);
-    } else if (jobNoController.text.isNotEmpty) {
-      String enteredJobNo = jobNoController.text.trim();
-      if (enteredJobNo.isEmpty) {
-        showSnackBar('Please enter a valid Job No.');
-        return;
-      }
-      tripSheet = await firebaseService.getTripSheetByJobNo(enteredJobNo);
-    } else {
-      showSnackBar('Please enter either No. or Job No.');
-      return;
-    }
-
-    if (tripSheet != null && mounted) {
-      setState(() {
-        populateFields(tripSheet);
-      });
-    } else {
-      showSnackBar('No data found for the entered details.');
-    }
   }
 
 // Helper function to populate fields
@@ -371,14 +323,6 @@ class _HomePageState extends State<HomePage> {
                               ],
                             ),
                           ),
-                          if (isEmployer)
-                            IconButton(
-                              onPressed: fetchTripSheetData,
-                              icon: const Icon(
-                                Icons.content_paste_search_outlined,
-                                color: Colors.black,
-                              ),
-                            )
                         ],
                       ),
                     ],
@@ -407,14 +351,6 @@ class _HomePageState extends State<HomePage> {
                               keyboardType: TextInputType.text,
                             ),
                           ),
-                          if (isEmployer)
-                            IconButton(
-                              onPressed: fetchTripSheetData,
-                              icon: const Icon(
-                                Icons.content_paste_search_outlined,
-                                color: Colors.black,
-                              ),
-                            )
                         ],
                       ),
                     ],
