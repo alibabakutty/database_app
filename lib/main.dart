@@ -27,12 +27,12 @@ Future<void> main() async {
     }
   }
   // Initialize Firebase
-  runApp(DatabaseApp(firstScreen: firstScreen));
+  runApp(TripSheetEntryApp(firstScreen: firstScreen));
 }
 
-class DatabaseApp extends StatelessWidget {
+class TripSheetEntryApp extends StatelessWidget {
   final Widget firstScreen;
-  const DatabaseApp({super.key, required this.firstScreen});
+  const TripSheetEntryApp({super.key, required this.firstScreen});
 
   @override
   Widget build(BuildContext context) {
