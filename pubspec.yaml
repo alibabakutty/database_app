@@ -16,6 +16,7 @@ dependencies:
   cloud_firestore: ^5.6.1
   firebase_core: ^3.10.0
   firebase_auth: ^5.4.1
+  shared_preferences: ^2.5.1
   decimal: ^3.2.1
   intl: ^0.20.1
   get: ^4.6.6

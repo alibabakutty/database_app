@@ -2,7 +2,9 @@ import 'package:database_app/models/trip_sheet.dart';
 import 'package:database_app/models/user_model.dart';
 import 'package:database_app/services/firebase_service.dart';
 import 'package:database_app/utils/calculations.dart';
+import 'package:database_app/utils/session_manager.dart';
 import 'package:database_app/utils/submit_handler.dart';
+import 'package:database_app/widget_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:database_app/widgets/header_section.dart';
@@ -411,7 +413,15 @@ class _HomePageState extends State<HomePage> {
           ),
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => _signOut(context),
+            onPressed: () async {
+              await SessionManager.logout(); // clear session
+              if (mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const WidgetTree()),
+                );
+              }
+            },
             tooltip: 'Sign Out',
           ),
         ],

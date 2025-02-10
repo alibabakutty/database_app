@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:database_app/models/user_model.dart';
+import 'package:database_app/utils/session_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Auth {
@@ -43,12 +44,36 @@ class Auth {
   Future<UserCredential> signInWithEmailAndPassword({
     required String email,
     required String password,
+    required bool
+        isEmployerLogin, // add this parameter to distinguish between employee and employer login
   }) async {
     try {
-      return await _firebaseAuth.signInWithEmailAndPassword(
+      // sign in with email and password
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      // Fetch the user's data from firestore
+      UserModel? userData = await getUserData(userCredential.user!.uid);
+
+      if (userData == null) {
+        throw Exception('User data not found');
+      }
+      // check if the user is trying to login with correct role
+      if (isEmployerLogin && !userData.isEmployer) {
+        throw Exception('You are not authorized to login as an employer.');
+      } else if (!isEmployerLogin && userData.isEmployer) {
+        throw Exception('You are not authorized to login as an employee.');
+      }
+      // save session
+      await SessionManager.saveLoginSession(
+        userCredential.user!.uid,
+        userData.isEmployer,
+      );
+
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message);
     }
@@ -103,6 +128,7 @@ class Auth {
   /// Sign out from Firebase Authentication
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+    await SessionManager.logout();
   }
 
   // Method to add user data to Firestore

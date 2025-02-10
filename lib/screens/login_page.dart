@@ -1,5 +1,6 @@
 import 'package:database_app/authentication/auth.dart';
 import 'package:database_app/models/user_model.dart';
+import 'package:database_app/utils/session_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -26,11 +27,18 @@ class _LoginPageState extends State<LoginPage> {
   // Handles email authentication
   Future<void> siginInOrRegisterWithEmail() async {
     try {
+      UserCredential? userCredential;
       if (isLogin) {
         // Login
-        await Auth().signInWithEmailAndPassword(
+        userCredential = await Auth().signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
+          isEmployerLogin: widget.isEmployer,
+        );
+        // save session after successful login
+        await SessionManager.saveLoginSession(
+          userCredential.user!.uid,
+          widget.isEmployer,
         );
       } else {
         // Register
@@ -62,6 +70,20 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         errorMessage = e.message;
       });
+      // show error message in a snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'An error occured!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -80,6 +102,8 @@ class _LoginPageState extends State<LoginPage> {
           UserCredential userCredential =
               await Auth().sigInWithCredential(credential);
           await saveUserToFirestore(userCredential);
+          await SessionManager.saveLoginSession(
+              userCredential.user!.uid, widget.isEmployer);
           if (mounted) {
             Navigator.of(context).pushReplacementNamed(
               widget.isEmployer ? '/dashboard' : '/home',
@@ -116,6 +140,8 @@ class _LoginPageState extends State<LoginPage> {
         UserCredential userCredential =
             await Auth().sigInWithCredential(credential);
         await saveUserToFirestore(userCredential);
+        await SessionManager.saveLoginSession(
+            userCredential.user!.uid, widget.isEmployer);
         if (mounted) {
           Navigator.of(context).pushReplacementNamed(
             widget.isEmployer ? '/dashboard' : '/home',

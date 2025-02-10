@@ -1,8 +1,39 @@
+import 'package:database_app/screens/dashboard.dart';
+import 'package:database_app/utils/session_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class WidgetTree extends StatelessWidget {
+class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
+
+  @override
+  State<WidgetTree> createState() => _WidgetTreeState();
+}
+
+class _WidgetTreeState extends State<WidgetTree> {
+  bool isCheckingSession = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> checkSession() async {
+    bool loggedIn = await SessionManager.isLoggedIn();
+    if (loggedIn) {
+      // if user is logged in, navigate to dashboard
+      Future.delayed(Duration.zero, () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+        );
+      });
+    } else {
+      setState(() {
+        isCheckingSession = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
